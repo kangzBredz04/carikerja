@@ -1,14 +1,35 @@
 import React, { useState } from "react";
+import { api } from "../../utils";
+import { useNavigate } from "react-router-dom";
+
+interface SignInResponse {
+  token: string;
+}
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password });
-    // Tambahkan logika untuk login
+
+    api
+      .post<SignInResponse>(
+        `/auth/sign-in?email=${email}&password=${password}`,
+        {
+          email,
+          password,
+        }
+      )
+      .then((response) => {
+        alert(`Token: ${response.token}`);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Error during sign-in:", error);
+      });
   };
 
   return (

@@ -7,8 +7,9 @@ import ErrorPage from "./pages/ErrorPage.tsx";
 import Home from "./pages/Home.tsx";
 import RegisterForm from "./pages/job_seeker/RegisterForm.tsx";
 import LoginForm from "./pages/job_seeker/LoginForm.tsx";
-import JobListWithoutLogin from "./pages/JobListWithoutLogin.tsx";
 import CompanyList from "./pages/CompanyList.tsx";
+import JobList from "./pages/job_seeker/JobList.tsx";
+import JobDetail from "./pages/job_seeker/JobDetail.tsx";
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/job-list",
-        element: <JobListWithoutLogin />,
+        element: <JobList />,
+      },
+      {
+        path: "/job-list/job/:id",
+        element: <JobDetail />,
       },
       {
         path: "/company-list",

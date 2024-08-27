@@ -1,10 +1,14 @@
 package com.carikerja.backend.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("api/auth")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AuthController {
 
     private final JwtService jwtService;
@@ -48,7 +53,7 @@ public class AuthController {
     }
 
     @PostMapping("sign-in")
-    public ResponseEntity<String> signIn(@RequestParam String email, @RequestParam String password,
+    public ResponseEntity<Map<String, String>> signIn(@RequestParam String email, @RequestParam String password,
             HttpServletResponse response) throws JOSEException {
         User user = userRepository.findByEmail(email);
         if (user != null) {
@@ -61,7 +66,10 @@ public class AuthController {
                 cookie.setPath("/");
                 response.addCookie(cookie);
 
-                return ResponseEntity.ok(token);
+                // Kembalikan token sebagai JSON
+                Map<String, String> responseBody = new HashMap<>();
+                responseBody.put("token", token);
+                return ResponseEntity.ok(responseBody);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
