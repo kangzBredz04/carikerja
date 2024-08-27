@@ -18,13 +18,17 @@ async function send<T>(
     throw new Error(`Error: ${response.status} ${response.statusText}`);
   }
 
-  // Response body diambil jika method bukan "DELETE"
-  if (method !== "DELETE") {
+  // Cek apakah respons memiliki body
+  const contentType = response.headers.get("Content-Type");
+
+  if (contentType && contentType.includes("application/json")) {
+    // Jika ada body JSON, kembalikan hasil parsing JSON
     const data: T = await response.json();
     return data;
   }
 
-  return {} as T; // jika DELETE tidak mengembalikan body
+  // Jika tidak ada body, kembalikan kosong
+  return {} as T;
 }
 
 export const api = {

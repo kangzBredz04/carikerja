@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { api } from "../../utils";
-import { useNavigate } from "react-router-dom";
 
 interface SignInResponse {
   token: string;
@@ -10,7 +9,6 @@ const LoginForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +22,10 @@ const LoginForm: React.FC = () => {
         }
       )
       .then((response) => {
-        alert(`Token: ${response.token}`);
-        navigate("/");
+        location.reload();
+        alert("Login Berhasil");
+        localStorage.setItem("token", response.token);
+        location.href = "/";
       })
       .catch((error) => {
         console.error("Error during sign-in:", error);
