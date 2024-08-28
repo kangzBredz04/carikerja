@@ -1,13 +1,19 @@
 import { useState } from "react";
+import { api } from "../../utils";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "", // Tambahkan state untuk konfirmasi password
+    role: "job_seeker",
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>(""); // State untuk pesan error
+
+  const navigate = useNavigate();
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
     setFormData({
@@ -18,50 +24,46 @@ export default function RegisterForm() {
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    // Tambahkan logika untuk submit form
-    console.log("Form submitted: ", formData);
+
+    // Validasi apakah password sama dengan konfirmasi password
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage("Password tidak cocok");
+      return;
+    }
+
+    api
+      .post(`/auth/register`, formData)
+      .then(() => {
+        alert("Daftar akun berhasil!"); // menampilkan alert saat berhasil
+        navigate("/user/login"); // pindah ke halaman home setelah berhasil
+      })
+      .catch((error) => {
+        console.log(error);
+        setErrorMessage("Email sudah terdaftar");
+      });
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
-      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
+    <div className="flex flex-col justify-center items-center bg-gray-100">
+      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md my-6">
         <h2 className="text-3xl font-bold text-center mb-6">Buat Profil</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="firstName"
+              htmlFor="name"
             >
-              Nama Depan
+              Nama Lengkap
             </label>
             <input
               type="text"
-              id="firstName"
-              name="firstName"
-              value={formData.firstName}
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               className="border rounded w-full py-2 px-3 text-gray-700"
-              placeholder="Nama Depan"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="lastName"
-            >
-              Nama Belakang
-            </label>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              className="border rounded w-full py-2 px-3 text-gray-700"
-              placeholder="Nama Belakang"
+              placeholder="Nama Lengkap"
               required
             />
           </div>
@@ -109,6 +111,31 @@ export default function RegisterForm() {
               {showPassword ? "🙈" : "👁️"}
             </span>
           </div>
+
+          {/* Input Konfirmasi Password */}
+          <div className="mb-4 relative">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="confirmPassword"
+            >
+              Konfirmasi Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="border rounded w-full py-2 px-3 text-gray-700"
+              placeholder="Konfirmasi Password"
+              required
+            />
+          </div>
+
+          {/* Pesan Error jika Password tidak cocok */}
+          {errorMessage && (
+            <div className="mb-4 text-red-500 text-sm">{errorMessage}</div>
+          )}
 
           <button
             type="submit"

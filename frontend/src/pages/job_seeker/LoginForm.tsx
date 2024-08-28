@@ -27,8 +27,8 @@ const LoginForm: React.FC = () => {
         localStorage.setItem("token", response.token);
         location.href = "/";
       })
-      .catch((error) => {
-        console.error("Error during sign-in:", error);
+      .catch(() => {
+        alert("Email atau password salah");
       });
   };
 
