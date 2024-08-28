@@ -91,9 +91,12 @@ export default function Header() {
                 </div>
 
                 {dropdownOpen && (
-                  <div className="absolute -right-16 mt-5 w-48 bg-white border rounded-lg shadow-lg text-sm z-10">
+                  <div
+                    className="absolute -right-16 mt-5 w-48 bg-white border rounded-lg shadow-lg text-sm z-10"
+                    onClick={() => setDropdownOpen(false)}
+                  >
                     <Link
-                      to="/profile"
+                      to="/user/profile"
                       className="block px-4 py-2 hover:bg-gray-100"
                     >
                       Profil Saya

@@ -10,6 +10,7 @@ import LoginForm from "./pages/job_seeker/LoginForm.tsx";
 import CompanyList from "./pages/CompanyList.tsx";
 import JobList from "./pages/job_seeker/JobList.tsx";
 import JobDetail from "./pages/job_seeker/JobDetail.tsx";
+import ProfilePage from "./pages/job_seeker/Profile.tsx";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: "/user/login",
         element: <LoginForm />,
+      },
+      {
+        path: "/user/profile",
+        element: <ProfilePage />,
       },
       {
         path: "/job-list",

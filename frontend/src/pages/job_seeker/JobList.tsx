@@ -54,115 +54,108 @@ export default function JobList() {
         </div>
       </div>
 
-      <div className="flex mt-6 px-6">
+      <div className="flex mt-6 px-6 mb-6">
         <div className="w-1/4 pr-4">
-          <div className="bg-white p-4 rounded-lg shadow-md h-full">
+          <div className="bg-white rounded-lg shadow-md h-full">
             {/* Filter Sidebar */}
-            <div className="w-1/4 pr-4">
-              <div className="bg-white p-4 rounded-lg shadow-md h-full">
-                {/* Prioritaskan */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold mb-2">Prioritaskan</h3>
-                  <div className="flex items-center gap-2">
-                    <button className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">
-                      Paling Relevan
-                    </button>
-                    <button className="px-4 py-2 bg-white border rounded-lg">
-                      Baru Ditambahkan
-                    </button>
-                  </div>
+            <div className="bg-white p-4 rounded-lg shadow-md h-full">
+              {/* Prioritaskan */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Prioritaskan</h3>
+                <div className="flex items-center gap-2">
+                  <button className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">
+                    Paling Relevan
+                  </button>
+                  <button className="px-4 py-2 bg-white border rounded-lg">
+                    Baru Ditambahkan
+                  </button>
                 </div>
+              </div>
 
-                {/* Tipe Pekerjaan */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold mb-2">Tipe Pekerjaan</h3>
-                  <div className="flex flex-col gap-2">
-                    {[
-                      "Penuh Waktu",
-                      "Kontrak",
-                      "Magang",
-                      "Paruh Waktu",
-                      "Freelance",
-                      "Harian",
-                    ].map((type) => (
-                      <label key={type} className="flex items-center gap-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        {type}
-                      </label>
-                    ))}
-                  </div>
+              {/* Tipe Pekerjaan */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Tipe Pekerjaan</h3>
+                <div className="flex flex-col gap-2">
+                  {[
+                    "Penuh Waktu",
+                    "Kontrak",
+                    "Magang",
+                    "Paruh Waktu",
+                    "Freelance",
+                    "Harian",
+                  ].map((type) => (
+                    <label key={type} className="flex items-center gap-2">
+                      <input type="checkbox" className="form-checkbox" />
+                      {type}
+                    </label>
+                  ))}
                 </div>
+              </div>
 
-                {/* Kebijakan Kerja */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold mb-2">Kebijakan Kerja</h3>
-                  <div className="flex flex-col gap-2">
-                    {["Kerja di kantor", "Hybrid", "Remote"].map((policy) => (
-                      <label key={policy} className="flex items-center gap-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        {policy}
-                      </label>
-                    ))}
-                  </div>
+              {/* Kebijakan Kerja */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Kebijakan Kerja</h3>
+                <div className="flex flex-col gap-2">
+                  {["Kerja di kantor", "Hybrid", "Remote"].map((policy) => (
+                    <label key={policy} className="flex items-center gap-2">
+                      <input type="checkbox" className="form-checkbox" />
+                      {policy}
+                    </label>
+                  ))}
                 </div>
+              </div>
 
-                {/* Pengalaman Kerja */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold mb-2">Pengalaman Kerja</h3>
-                  <div className="flex flex-col gap-2">
-                    {[
-                      "Kurang dari setahun",
-                      "1-3 tahun",
-                      "3-5 tahun",
-                      "Lebih dari 5 tahun",
-                    ].map((experience) => (
+              {/* Pengalaman Kerja */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Pengalaman Kerja</h3>
+                <div className="flex flex-col gap-2">
+                  {[
+                    "Kurang dari setahun",
+                    "1-3 tahun",
+                    "3-5 tahun",
+                    "Lebih dari 5 tahun",
+                  ].map((experience) => (
+                    <label key={experience} className="flex items-center gap-2">
+                      <input type="checkbox" className="form-checkbox" />
+                      {experience}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tingkat Pendidikan */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Tingkat Pendidikan</h3>
+                <div className="flex flex-col gap-2">
+                  {["SMA/SMK", "Diploma", "Sarjana", "Pascasarjana"].map(
+                    (education) => (
                       <label
-                        key={experience}
+                        key={education}
                         className="flex items-center gap-2"
                       >
                         <input type="checkbox" className="form-checkbox" />
-                        {experience}
+                        {education}
                       </label>
-                    ))}
-                  </div>
+                    )
+                  )}
                 </div>
+              </div>
 
-                {/* Tingkat Pendidikan */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold mb-2">Tingkat Pendidikan</h3>
-                  <div className="flex flex-col gap-2">
-                    {["SMA/SMK", "Diploma", "Sarjana", "Pascasarjana"].map(
-                      (education) => (
-                        <label
-                          key={education}
-                          className="flex items-center gap-2"
-                        >
-                          <input type="checkbox" className="form-checkbox" />
-                          {education}
-                        </label>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Terakhir Diperbarui */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold mb-2">
-                    Terakhir Diperbarui
-                  </h3>
-                  <div className="flex flex-col gap-2">
-                    {[
-                      "Dalam 24 jam",
-                      "Dalam 3 hari",
-                      "Dalam 7 hari",
-                      "Lebih dari 7 hari",
-                    ].map((updated) => (
-                      <label key={updated} className="flex items-center gap-2">
-                        <input type="checkbox" className="form-checkbox" />
-                        {updated}
-                      </label>
-                    ))}
-                  </div>
+              {/* Terakhir Diperbarui */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Terakhir Diperbarui</h3>
+                <div className="flex flex-col gap-2">
+                  {[
+                    "Dalam 24 jam",
+                    "Dalam 3 hari",
+                    "Dalam 7 hari",
+                    "Lebih dari 7 hari",
+                  ].map((updated) => (
+                    <label key={updated} className="flex items-center gap-2">
+                      <input type="checkbox" className="form-checkbox" />
+                      {updated}
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
