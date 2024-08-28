@@ -11,6 +11,8 @@ import CompanyList from "./pages/CompanyList.tsx";
 import JobList from "./pages/job_seeker/JobList.tsx";
 import JobDetail from "./pages/job_seeker/JobDetail.tsx";
 import ProfilePage from "./pages/job_seeker/Profile.tsx";
+import Employe from "./pages/employer/Employe.tsx";
+import Dashboard from "./pages/employer/Dashboard.tsx";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +47,17 @@ const router = createBrowserRouter([
       {
         path: "/company-list",
         element: <CompanyList />,
+      },
+    ],
+  },
+  {
+    path: "/employe",
+    element: <Employe />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "/employe/dashboard",
+        element: <Dashboard />,
       },
     ],
   },

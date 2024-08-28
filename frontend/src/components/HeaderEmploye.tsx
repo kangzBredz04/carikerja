@@ -4,7 +4,7 @@ import { MdOutlineLanguage, MdNotificationsNone } from "react-icons/md";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { api } from "../utils";
 
-export default function Header() {
+export default function HeaderEmpolye() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState({
     name: "",
@@ -46,14 +46,17 @@ export default function Header() {
     <header className="bg-white border-b shadow-sm sticky top-0 z-50 font-KumbhSans">
       <div className="container mx-auto py-4 flex justify-between items-center">
         <div className="flex items-center space-x-5">
-          <Link to="/" className="text-3xl font-bold tracking-widest">
-            CARIKERJA
+          <Link
+            to="/employe/dashboard"
+            className="text-3xl font-bold tracking-widest"
+          >
+            KASIHKERJA
           </Link>
-          <Link to="/job-list" className="text-base hover:text-gray-500">
-            LOWONGAN KERJA
+          <Link to="/biaya-faq" className="text-base hover:text-gray-500">
+            BIAYA & FAQ
           </Link>
-          <Link to="/employe" className="hover:text-gray-500 text-base">
-            PERUSAHAAN
+          <Link to="/blog" className="hover:text-gray-500 text-base">
+            BLOG
           </Link>
         </div>
 
@@ -119,13 +122,13 @@ export default function Header() {
             </div>
           ) : (
             <>
-              <Link to="/user/register">DAFTAR</Link>
               <Link to="/user/login">MASUK</Link>
+              <Link to="/user/login">PASANG LOKER</Link>
               <Link
-                to="/employe/dashboard"
+                to="/"
                 className="py-1 px-3 border-blue-600 text-blue-600 font-bold border-[1px] rounded-lg"
               >
-                UNTUK KASIHKERJA
+                UNTUK CARIKERJA
               </Link>
             </>
           )}
