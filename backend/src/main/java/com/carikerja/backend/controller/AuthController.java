@@ -42,7 +42,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("register")
+    @PostMapping("sign-up")
     public ResponseEntity<User> register(@RequestBody User user) {
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
