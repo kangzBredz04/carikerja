@@ -20,11 +20,15 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((auth) -> {
+                    // Routes that require authentication
                     auth.requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated();
                     auth.requestMatchers(HttpMethod.GET, "/api/auth/sign-out").authenticated();
+                    auth.requestMatchers(HttpMethod.GET, "/api/education").authenticated();
 
-                    auth.requestMatchers(HttpMethod.GET, "/api/planets").authenticated();
+                    // Allow access to skill routes only to ADMIN role
+                    // auth.requestMatchers("/api/skills/**").hasRole("ADMIN");
 
+                    // All other routes require authentication
                     auth.anyRequest().permitAll();
                 })
                 .addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class)

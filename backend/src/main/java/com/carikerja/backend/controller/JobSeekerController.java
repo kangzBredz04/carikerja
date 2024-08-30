@@ -9,7 +9,7 @@ import com.carikerja.backend.repository.JobSeekerRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/job_seekers")
+@RequestMapping("/api/job-seekers")
 public class JobSeekerController {
 
     @Autowired

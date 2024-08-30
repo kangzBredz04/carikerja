@@ -9,7 +9,7 @@ import com.carikerja.backend.repository.JobSeekerSkillRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/job_seeker_skills")
+@RequestMapping("/api/job-seeker-skills")
 public class JobSeekerSkillController {
 
     @Autowired
@@ -35,6 +35,7 @@ public class JobSeekerSkillController {
             @RequestBody JobSeekerSkill updatedJobSeekerSkill) {
         JobSeekerSkill jobSeekerSkill = jobSeekerSkillRepository.findById(id).orElse(null);
         if (jobSeekerSkill != null) {
+            jobSeekerSkill.setSkill(updatedJobSeekerSkill.getSkill());
             jobSeekerSkill.setLevel(updatedJobSeekerSkill.getLevel());
             return jobSeekerSkillRepository.save(jobSeekerSkill);
         }

@@ -37,6 +37,9 @@ public class EducationController {
             education.setDegreeLevel(updatedEducation.getDegreeLevel());
             education.setInstitutionName(updatedEducation.getInstitutionName());
             education.setFieldOfStudy(updatedEducation.getFieldOfStudy());
+            education.setStartDate(updatedEducation.getStartDate());
+            education.setEndDate(updatedEducation.getEndDate());
+            education.setAdditionalInfo(updatedEducation.getAdditionalInfo());
             return educationRepository.save(education);
         }
         return null;

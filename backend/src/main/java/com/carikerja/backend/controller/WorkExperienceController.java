@@ -9,7 +9,7 @@ import com.carikerja.backend.repository.WorkExperienceRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/work_experience")
+@RequestMapping("/api/work-experience")
 public class WorkExperienceController {
 
     @Autowired
