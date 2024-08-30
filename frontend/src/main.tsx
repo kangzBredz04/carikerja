@@ -13,6 +13,8 @@ import JobDetail from "./pages/job_seeker/JobDetail.tsx";
 import ProfilePage from "./pages/job_seeker/Profile.tsx";
 import Employe from "./pages/employer/Employe.tsx";
 import Dashboard from "./pages/employer/Dashboard.tsx";
+import RegisterFormEmploye from "./pages/employer/RegisterFormEmploye.tsx";
+import LoginFormEmploye from "./pages/employer/LoginFormEmploye.tsx";
 
 const router = createBrowserRouter([
   {
@@ -58,6 +60,14 @@ const router = createBrowserRouter([
       {
         path: "/employe/dashboard",
         element: <Dashboard />,
+      },
+      {
+        path: "/employe/register",
+        element: <RegisterFormEmploye />,
+      },
+      {
+        path: "/employe/login",
+        element: <LoginFormEmploye />,
       },
     ],
   },

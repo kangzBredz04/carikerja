@@ -52,7 +52,7 @@ export default function Header() {
           <Link to="/job-list" className="text-base hover:text-gray-500">
             LOWONGAN KERJA
           </Link>
-          <Link to="/employe" className="hover:text-gray-500 text-base">
+          <Link to="/company-list" className="hover:text-gray-500 text-base">
             PERUSAHAAN
           </Link>
         </div>

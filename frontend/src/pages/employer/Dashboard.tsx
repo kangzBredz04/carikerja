@@ -12,25 +12,15 @@ export default function Dashboard() {
             sekarang dan posting pekerjaan Anda secara gratis:
           </p>
         </div>
-        <form className="mt-8 md:mt-0 bg-white p-6 rounded-lg shadow-lg w-full md:w-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form className="mt-8 md:mt-0 bg-white p-6 rounded-lg shadow-lg w-full md:w-1/3">
+          <div className="grid grid-cols-1 gap-4">
             <input
-              className="border p-2 rounded"
-              type="text"
-              placeholder="Nama Depan"
-            />
-            <input
-              className="border p-2 rounded"
-              type="text"
-              placeholder="Nama Belakang"
-            />
-            <input
-              className="border p-2 rounded"
+              className="border p-2 rounded col-span-2"
               type="email"
               placeholder="Email Kerja"
             />
             <input
-              className="border p-2 rounded"
+              className="border p-2 rounded col-span-2"
               type="tel"
               placeholder="+62 Nomor Telepon"
             />

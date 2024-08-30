@@ -122,8 +122,8 @@ export default function HeaderEmpolye() {
             </div>
           ) : (
             <>
-              <Link to="/user/login">MASUK</Link>
-              <Link to="/user/login">PASANG LOKER</Link>
+              <Link to="/employe/register">DAFTAR</Link>
+              <Link to="/employe/login">MASUK</Link>
               <Link
                 to="/"
                 className="py-1 px-3 border-blue-600 text-blue-600 font-bold border-[1px] rounded-lg"

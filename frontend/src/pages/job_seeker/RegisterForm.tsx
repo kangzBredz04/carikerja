@@ -35,7 +35,7 @@ export default function RegisterForm() {
       .post(`/auth/register`, formData)
       .then(() => {
         alert("Daftar akun berhasil!"); // menampilkan alert saat berhasil
-        navigate("/user/login"); // pindah ke halaman home setelah berhasil
+        navigate("/user/login");
       })
       .catch((error) => {
         console.log(error);
