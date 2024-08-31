@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import CompanyCard from "../components/CompanyCard";
-import { api } from "../utils";
+import CompanyCard from "../../components/CompanyCard";
+import { api } from "../../utils";
 
 // Define the Company interface based on your database schema
 interface Company {
