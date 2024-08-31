@@ -1,87 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CompanyCard from "../components/CompanyCard";
+import { api } from "../utils";
 
-const companies = [
-  {
-    name: "RTMart Grup Indonesia",
-    location: "Tangerang, Banten, Indonesia",
-    industry: "Consumer Goods",
-    jobCount: 0,
-    lastActive: "42 menit yang lalu",
-    logo: "/logo-amazon.png",
-  },
-  {
-    name: "Hyundai Samarinda",
-    location: "Samarinda, Kalimantan Timur, Indonesia",
-    industry: "Automotive",
-    jobCount: 1,
-    lastActive: "sejam yang lalu",
-    logo: "/logo-apple.jpg",
-  },
-  {
-    name: "PT Lumbung Dana Indonesia",
-    location: "Jakarta Selatan, DKI Jakarta, Indonesia",
-    industry: "Financial Services",
-    jobCount: 1,
-    lastActive: "38 menit yang lalu",
-    logo: "/loo-edii.png",
-  },
-  {
-    name: "PT Lumbung Dana Indonesia",
-    location: "Jakarta Selatan, DKI Jakarta, Indonesia",
-    industry: "Financial Services",
-    jobCount: 1,
-    lastActive: "38 menit yang lalu",
-    logo: "/loo-edii.png",
-  },
-  {
-    name: "PT Lumbung Dana Indonesia",
-    location: "Jakarta Selatan, DKI Jakarta, Indonesia",
-    industry: "Financial Services",
-    jobCount: 1,
-    lastActive: "38 menit yang lalu",
-    logo: "/loo-edii.png",
-  },
-  {
-    name: "PT Lumbung Dana Indonesia",
-    location: "Jakarta Selatan, DKI Jakarta, Indonesia",
-    industry: "Financial Services",
-    jobCount: 1,
-    lastActive: "38 menit yang lalu",
-    logo: "/loo-edii.png",
-  },
-  {
-    name: "PT Lumbung Dana Indonesia",
-    location: "Jakarta Selatan, DKI Jakarta, Indonesia",
-    industry: "Financial Services",
-    jobCount: 1,
-    lastActive: "38 menit yang lalu",
-    logo: "/loo-edii.png",
-  },
-  {
-    name: "PT Lumbung Dana Indonesia",
-    location: "Jakarta Selatan, DKI Jakarta, Indonesia",
-    industry: "Financial Services",
-    jobCount: 1,
-    lastActive: "38 menit yang lalu",
-    logo: "/loo-edii.png",
-  },
-  {
-    name: "PT Lumbung Dana Indonesia",
-    location: "Jakarta Selatan, DKI Jakarta, Indonesia",
-    industry: "Financial Services",
-    jobCount: 1,
-    lastActive: "38 menit yang lalu",
-    logo: "/loo-edii.png",
-  },
-];
+// Define the Company interface based on your database schema
+interface Company {
+  id: number;
+  user_id: number;
+  bannerImage: string;
+  logoImage: string;
+  companyName: string;
+  slogan: string;
+  address: string;
+  companySize: "small" | "medium" | "large";
+  industry: string;
+  websiteLink: string;
+  instagramLink: string;
+  facebookLink: string;
+  linkedinLink: string;
+  companyDescription: string;
+}
 
 export default function CompanyList() {
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredCompanies = companies.filter((company) =>
-    company.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    // Fetch company data from backend
+    api
+      .get("/employers") // Replace with the correct endpoint
+      .then((response) => {
+        setCompanies(response); // Assuming the data is in response.data
+      })
+      .catch((error) => {
+        console.error("Error fetching company data:", error);
+      });
+  }, []); // Empty dependency array means this effect runs once on component mount
+
+  const filteredCompanies = companies.filter((company) => {
+    if (!company.companyName) {
+      return false; // Exclude companies without a name
+    }
+
+    return company.companyName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
   return (
     <div className="p-4">
       <div className="mb-4">
@@ -94,8 +56,17 @@ export default function CompanyList() {
         />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCompanies.map((company, index) => (
-          <CompanyCard key={index} {...company} />
+        {filteredCompanies.map((company) => (
+          <CompanyCard
+            key={company.id}
+            id={company.id}
+            name={company.companyName} // Mapping the fields
+            location={company.address}
+            industry={company.industry}
+            jobCount={0} // Assuming no jobCount available, set default
+            slogan={company.slogan || "No slogan available"} // Pass slogan
+            logo={company.logoImage || "/logo-placeholder.png"} // Fallback logo
+          />
         ))}
       </div>
     </div>

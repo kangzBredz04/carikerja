@@ -58,11 +58,12 @@ function ProfilePage() {
     api
       .get("/auth/me")
       .then((response) => {
-        if (response.status === 403) {
-          navigate("/user/login");
-        } else if (response.data) {
-          setIsLoggedIn(true);
-        }
+        console.log(response);
+        // if (response.status === 403) {
+        //   navigate("/user/login");
+        // } else if (response.data) {
+        //   setIsLoggedIn(true);
+        // }
       })
       .catch(() => {
         navigate("/user/login");
