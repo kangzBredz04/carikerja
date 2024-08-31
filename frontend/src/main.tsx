@@ -15,6 +15,7 @@ import Employe from "./pages/employer/Employe.tsx";
 import Dashboard from "./pages/employer/Dashboard.tsx";
 import RegisterFormEmploye from "./pages/employer/RegisterFormEmploye.tsx";
 import LoginFormEmploye from "./pages/employer/LoginFormEmploye.tsx";
+import ImageUpload from "./pages/ImageUpload.tsx";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "/company-list",
         element: <CompanyList />,
+      },
+      {
+        path: "/upload",
+        element: <ImageUpload />,
       },
     ],
   },

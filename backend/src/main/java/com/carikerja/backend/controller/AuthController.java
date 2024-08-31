@@ -17,7 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carikerja.backend.model.User;
+import com.carikerja.backend.model.JobSeeker;
+import com.carikerja.backend.model.Employer;
 import com.carikerja.backend.repository.UserRepository;
+import com.carikerja.backend.repository.JobSeekerRepository;
+import com.carikerja.backend.repository.EmployerRepository;
 import com.carikerja.backend.service.JwtService;
 import com.nimbusds.jose.JOSEException;
 
@@ -34,19 +38,49 @@ public class AuthController {
     @Autowired
     private final UserRepository userRepository;
 
+    @Autowired
+    private final JobSeekerRepository jobSeekerRepository;
+
+    @Autowired
+    private final EmployerRepository employerRepository;
+
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(JwtService jwtService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(JwtService jwtService, UserRepository userRepository, PasswordEncoder passwordEncoder,
+            JobSeekerRepository jobSeekerRepository, EmployerRepository employerRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jobSeekerRepository = jobSeekerRepository;
+        this.employerRepository = employerRepository;
     }
 
     @PostMapping("sign-up")
     public ResponseEntity<User> register(@RequestBody User user) {
         try {
+            // Enkripsi password sebelum menyimpan
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            return ResponseEntity.ok(userRepository.save(user));
+
+            // Simpan pengguna ke tabel user
+            User savedUser = userRepository.save(user);
+
+            // Cek peran yang dikirim dan tambahkan ke tabel yang sesuai dengan email
+            if (user.getRole().equals("JOB_SEEKER")) {
+                // Buat entitas Job Seeker baru dengan email yang sama
+                JobSeeker jobSeeker = new JobSeeker();
+                jobSeeker.setUser(savedUser);
+                jobSeeker.setEmail(savedUser.getEmail()); // Set email
+                jobSeekerRepository.save(jobSeeker);
+
+            } else if (user.getRole().equals("EMPLOYER")) {
+                // Buat entitas Employer baru dengan email yang sama
+                Employer employer = new Employer();
+                employer.setUser(savedUser);
+                employerRepository.save(employer);
+            }
+
+            // Jika role adalah ADMIN, cukup tambahkan ke tabel User
+            return ResponseEntity.ok(savedUser);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

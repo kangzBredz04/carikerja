@@ -8,7 +8,7 @@ export default function RegisterForm() {
     email: "",
     password: "",
     confirmPassword: "", // Tambahkan state untuk konfirmasi password
-    role: "job_seeker",
+    role: "JOB_SEEKER",
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>(""); // State untuk pesan error
@@ -32,14 +32,13 @@ export default function RegisterForm() {
     }
 
     api
-      .post(`/auth/register`, formData)
+      .post(`/auth/sign-up`, formData)
       .then(() => {
         alert("Daftar akun berhasil!"); // menampilkan alert saat berhasil
         navigate("/user/login");
       })
       .catch((error) => {
         console.log(error);
-        setErrorMessage("Email sudah terdaftar");
       });
   };
 

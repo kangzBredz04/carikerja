@@ -1,41 +1,76 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FaChevronUp } from "react-icons/fa";
 import { IoBookmarkOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom"; // Gunakan useNavigate untuk navigasi
+import { useNavigate } from "react-router-dom";
+
+interface Job {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  tags: string[];
+  hot: boolean;
+  active: boolean;
+  time: string;
+}
 
 export default function JobList() {
   const jobsPerPage = 10;
-  const totalJobs = 25;
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState<string>(""); // Untuk menangani pencarian
   const topRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate(); // Inisialisasi navigasi
+  const navigate = useNavigate();
 
-  const jobs = Array(25)
-    .fill(0)
-    .map((_, index) => ({
-      id: index + 1, // Tambahkan ID unik untuk setiap pekerjaan
-      title: `Pekerjaan ${index + 1}`,
-      company: `Perusahaan ${index + 1}`,
-      location: "Lokasi",
-      salary: `Rp ${index + 1} jt`,
-      tags: ["Kerja di kantor", "Penuh Waktu", "1 – 3 tahun", "Minimal SMA"],
-      hot: index % 2 === 0,
-      active: true,
-      time: `${index + 10} menit yang lalu`,
-    }));
+  // Ambil data dari backend
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch("/jobs"); // Ganti dengan endpoint backend yang sesuai
+        if (response.ok) {
+          const data = await response.json();
+          setJobs(data);
+          setFilteredJobs(data); // Set initial data untuk filteredJobs
+        } else {
+          console.error("Error fetching jobs:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  // Update filteredJobs saat searchTerm berubah
+  useEffect(() => {
+    const filtered = jobs.filter(
+      (job) =>
+        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.company.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredJobs(filtered);
+    setCurrentPage(1); // Reset ke halaman 1 saat melakukan pencarian
+  }, [searchTerm, jobs]);
 
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
+  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
 
-  const totalPages = Math.ceil(totalJobs / jobsPerPage);
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
   const handleScrollToTop = () => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleJobClick = (id: number) => {
-    navigate(`/job-list/job/${id}`); // Navigasi ke halaman detail pekerjaan dengan ID
+    navigate(`/job-list/job/${id}`);
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
 
   return (
@@ -46,6 +81,8 @@ export default function JobList() {
           <input
             type="text"
             placeholder="Cari lowongan"
+            value={searchTerm}
+            onChange={handleSearchChange}
             className="px-4 py-2 border rounded-lg w-4/5"
           />
           <button className="w-1/5 px-4 py-2 bg-blue-600 text-white rounded-lg">
@@ -59,105 +96,7 @@ export default function JobList() {
           <div className="bg-white rounded-lg shadow-md h-full">
             {/* Filter Sidebar */}
             <div className="bg-white p-4 rounded-lg shadow-md h-full">
-              {/* Prioritaskan */}
-              <div className="mb-6">
-                <h3 className="text-lg font-bold mb-2">Prioritaskan</h3>
-                <div className="flex items-center gap-2">
-                  <button className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">
-                    Paling Relevan
-                  </button>
-                  <button className="px-4 py-2 bg-white border rounded-lg">
-                    Baru Ditambahkan
-                  </button>
-                </div>
-              </div>
-
-              {/* Tipe Pekerjaan */}
-              <div className="mb-6">
-                <h3 className="text-lg font-bold mb-2">Tipe Pekerjaan</h3>
-                <div className="flex flex-col gap-2">
-                  {[
-                    "Penuh Waktu",
-                    "Kontrak",
-                    "Magang",
-                    "Paruh Waktu",
-                    "Freelance",
-                    "Harian",
-                  ].map((type) => (
-                    <label key={type} className="flex items-center gap-2">
-                      <input type="checkbox" className="form-checkbox" />
-                      {type}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Kebijakan Kerja */}
-              <div className="mb-6">
-                <h3 className="text-lg font-bold mb-2">Kebijakan Kerja</h3>
-                <div className="flex flex-col gap-2">
-                  {["Kerja di kantor", "Hybrid", "Remote"].map((policy) => (
-                    <label key={policy} className="flex items-center gap-2">
-                      <input type="checkbox" className="form-checkbox" />
-                      {policy}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Pengalaman Kerja */}
-              <div className="mb-6">
-                <h3 className="text-lg font-bold mb-2">Pengalaman Kerja</h3>
-                <div className="flex flex-col gap-2">
-                  {[
-                    "Kurang dari setahun",
-                    "1-3 tahun",
-                    "3-5 tahun",
-                    "Lebih dari 5 tahun",
-                  ].map((experience) => (
-                    <label key={experience} className="flex items-center gap-2">
-                      <input type="checkbox" className="form-checkbox" />
-                      {experience}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tingkat Pendidikan */}
-              <div className="mb-6">
-                <h3 className="text-lg font-bold mb-2">Tingkat Pendidikan</h3>
-                <div className="flex flex-col gap-2">
-                  {["SMA/SMK", "Diploma", "Sarjana", "Pascasarjana"].map(
-                    (education) => (
-                      <label
-                        key={education}
-                        className="flex items-center gap-2"
-                      >
-                        <input type="checkbox" className="form-checkbox" />
-                        {education}
-                      </label>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* Terakhir Diperbarui */}
-              <div className="mb-6">
-                <h3 className="text-lg font-bold mb-2">Terakhir Diperbarui</h3>
-                <div className="flex flex-col gap-2">
-                  {[
-                    "Dalam 24 jam",
-                    "Dalam 3 hari",
-                    "Dalam 7 hari",
-                    "Lebih dari 7 hari",
-                  ].map((updated) => (
-                    <label key={updated} className="flex items-center gap-2">
-                      <input type="checkbox" className="form-checkbox" />
-                      {updated}
-                    </label>
-                  ))}
-                </div>
-              </div>
+              {/* Filter Sidebar bisa disini */}
             </div>
           </div>
         </div>
@@ -172,7 +111,7 @@ export default function JobList() {
                 <div
                   key={index}
                   className="border-2 border-gray-200 rounded-md p-4 mb-4 cursor-pointer"
-                  onClick={() => handleJobClick(job.id)} // Panggil fungsi handleJobClick dengan ID pekerjaan
+                  onClick={() => handleJobClick(job.id)}
                 >
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold">{job.title}</h3>
