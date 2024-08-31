@@ -4,33 +4,43 @@ import { FaBookmark, FaShareAlt, FaRocket } from "react-icons/fa";
 
 interface Job {
   id: number;
-  title: string;
-  company: string;
+  employer: {
+    id: number;
+    user: {
+      id: number;
+      email: string;
+      name: string | null;
+      role: string;
+      username: string;
+    };
+    bannerImage: string | null;
+    logoImage: string | null;
+    companyName: string | null;
+    slogan: string | null;
+    address: string | null;
+    companySize: string | null;
+    industry: string | null;
+    websiteLink: string | null;
+    instagramLink: string | null;
+    facebookLink: string | null;
+    linkedinLink: string | null;
+    companyDescription: string | null;
+  };
+  jobField: string;
+  jobTitle: string;
+  jobType: string;
+  workSystem: string;
   location: string;
-  salary: string;
-  description: string;
-  requirements: string[];
-  skills: string[];
-  lastUpdated: string;
-  recruiter: {
-    name: string;
-    title: string;
-  };
-  companyDetails: {
-    name: string;
-    industry: string;
-    size: string;
-    address: string;
-  };
-  relatedJobs: {
-    title: string;
-    company: string;
-    location: string;
-    salary: string;
-    lastUpdated: string;
-    level: string;
-    experience: string;
-  }[];
+  jobDescription: string;
+  minSalary: number;
+  maxSalary: number;
+  minAge: number;
+  maxAge: number;
+  genderPreference: string;
+  requiredSkills: string;
+  requiredEducation: string;
+  requiredExperience: string;
+  cvLink: string;
 }
 
 export default function JobDetail() {
@@ -42,14 +52,10 @@ export default function JobDetail() {
   useEffect(() => {
     const fetchJobDetail = async () => {
       try {
-        const response = await fetch(`/api/jobs/${id}`); // Replace with your API endpoint
-        if (!response.ok) {
-          throw new Error("Failed to fetch job details");
-        }
-        const jobData: Job = await response.json();
-        setJob(jobData);
+        const response = await fetch(`http://localhost:8080/api/jobs/${id}`); // Replace with your API endpoint
+        setJob(await response.json());
       } catch (error) {
-        setError(error);
+        setError(error as string);
       } finally {
         setLoading(false);
       }
@@ -65,12 +71,17 @@ export default function JobDetail() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="mx-auto bg-white p-8 rounded-lg shadow-lg">
-        {/* Header Job */}
+        {/* Job Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h1 className="text-2xl font-bold mb-2">{job.title}</h1>
-            <p className="text-blue-600 font-semibold text-lg">{job.salary}</p>
-            <p className="text-gray-600">{job.company}</p>
+            <h1 className="text-2xl font-bold mb-2">{job.jobTitle}</h1>
+            <p className="text-blue-600 font-semibold text-lg">
+              {job.minSalary.toLocaleString()} -{" "}
+              {job.maxSalary.toLocaleString()} IDR
+            </p>
+            <p className="text-gray-600">
+              {job.employer.companyName || "No company info"}
+            </p>
             <p className="text-gray-600">{job.location}</p>
           </div>
           <div>
@@ -97,84 +108,38 @@ export default function JobDetail() {
         {/* Job Description */}
         <div className="mb-4">
           <h2 className="text-lg font-semibold">Job Description</h2>
-          <p className="text-gray-700">{job.description}</p>
-        </div>
-
-        {/* Qualifications */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Qualifications</h2>
-          <div className="flex flex-wrap gap-2">
-            {job.requirements.map((requirement, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full"
-              >
-                {requirement}
-              </span>
-            ))}
-          </div>
+          <p className="text-gray-700">{job.jobDescription}</p>
         </div>
 
         {/* Required Skills */}
         <div className="mb-4">
           <h2 className="text-lg font-semibold mb-2">Required Skills</h2>
           <div className="flex flex-wrap gap-2">
-            {job.skills.map((skill, index) => (
+            {job.requiredSkills.split(",").map((skill, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-blue-200 text-blue-700 rounded-full"
               >
-                {skill}
+                {skill.trim()}
               </span>
             ))}
           </div>
         </div>
 
-        {/* Other Information */}
+        {/* Required Experience */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Last Updated</h2>
-          <p className="text-gray-600">{job.lastUpdated}</p>
+          <h2 className="text-lg font-semibold mb-2">Required Experience</h2>
+          <p className="text-gray-600">{job.requiredExperience}</p>
         </div>
 
-        {/* Recruiter Information */}
+        {/* Employer Details */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Recruiter</h2>
-          <p className="text-gray-700">{job.recruiter.name}</p>
-          <p className="text-gray-600">{job.recruiter.title}</p>
-        </div>
-
-        {/* Company Details */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Company Details</h2>
-          <p className="text-gray-700">{job.companyDetails.name}</p>
-          <p className="text-gray-600">{job.companyDetails.industry}</p>
-          <p className="text-gray-600">{job.companyDetails.size}</p>
-          <p className="text-gray-600">{job.companyDetails.address}</p>
-        </div>
-
-        {/* Related Jobs */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Related Jobs</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {job.relatedJobs.map((relatedJob, index) => (
-              <div
-                key={index}
-                className="border-2 border-gray-200 rounded-md p-4"
-              >
-                <h3 className="text-lg font-semibold mb-2">
-                  {relatedJob.title}
-                </h3>
-                <p className="text-gray-600">{relatedJob.company}</p>
-                <p className="text-gray-600">{relatedJob.location}</p>
-                <p className="text-blue-600 font-semibold">
-                  {relatedJob.salary}
-                </p>
-                <p className="text-gray-600">{relatedJob.lastUpdated}</p>
-                <p className="text-gray-600">{relatedJob.level}</p>
-                <p className="text-gray-600">{relatedJob.experience}</p>
-              </div>
-            ))}
-          </div>
+          <h2 className="text-lg font-semibold mb-2">Employer Details</h2>
+          <p className="text-gray-700">{job.employer.companyName}</p>
+          <p className="text-gray-600">{job.employer.address}</p>
+          <p className="text-gray-600">{job.employer.industry}</p>
+          <p className="text-gray-600">{job.employer.companySize}</p>
+          <p className="text-gray-600">{job.employer.companyDescription}</p>
         </div>
       </div>
     </div>
