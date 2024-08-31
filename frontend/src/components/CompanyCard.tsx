@@ -1,11 +1,13 @@
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { HiBuildingOffice2 } from "react-icons/hi2";
+import { RiBriefcase4Fill } from "react-icons/ri";
 
 interface CompanyCardProps {
   id: number;
   name: string;
   location: string;
   industry: string;
-  jobCount: number;
   slogan: string;
   logo: string;
 }
@@ -15,15 +17,35 @@ function CompanyCard({
   name,
   location,
   industry,
-  jobCount,
   slogan,
   logo,
 }: CompanyCardProps) {
+  const [jobCount, setJobCount] = useState<number>(0); // State to hold job count
   const navigate = useNavigate(); // Use useNavigate instead of useRouter
 
+  // Fetch job data when component mounts or id changes
+  useEffect(() => {
+    const fetchJobCount = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/jobs/by-employer?employerId=${id}`
+        ); // API endpoint to get jobs for this employer
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        // Assuming the API returns an array of jobs
+        setJobCount(data.length); // Update job count with the number of jobs
+      } catch (error) {
+        console.error("Error fetching job data:", error);
+        setJobCount(0); // Set job count to 0 if there's an error
+      }
+    };
+
+    fetchJobCount();
+  }, [id]); // Dependency array includes id to refetch if id changes
+
   const handleCardClick = () => {
-    console.log(id);
-    // Navigate to company detail page using company id
     navigate(`/company/${id}`);
   };
 
@@ -43,13 +65,17 @@ function CompanyCard({
           <p className="text-sm text-gray-500">{location}</p>
         </div>
       </div>
-      <div className="mb-2">
-        <p className="text-sm font-semibold">{industry}</p>
-        <p className="text-sm text-gray-500">
+      <div className="mb-2 flex flex-col gap-2">
+        <p className="text-sm font-semibold flex items-center gap-2">
+          <HiBuildingOffice2 size={18} />
+          {industry}
+        </p>
+        <p className="text-sm font-semibold flex items-center gap-2">
+          <RiBriefcase4Fill size={18} />
           {jobCount > 0 ? `${jobCount} lowongan` : "Sedang tidak ada lowongan"}
         </p>
       </div>
-      <div className="text-sm text-gray-400">{slogan}</div>
+      <div className="text-sm font-semibold">{slogan}</div>
     </div>
   );
 }

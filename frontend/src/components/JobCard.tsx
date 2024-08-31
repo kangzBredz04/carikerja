@@ -37,6 +37,7 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job, onClick }: JobCardProps) {
+  console.log(job);
   return (
     <div
       className="border-2 border-gray-200 rounded-md p-4 mb-4 cursor-pointer"
@@ -44,7 +45,7 @@ export default function JobCard({ job, onClick }: JobCardProps) {
     >
       <div className="flex items-center mb-4">
         <img
-          src={job.companyLogo || "/logo-pub.png"} // Gambar dummy jika logo tidak ada
+          src={job.employer.logoImage || "/logo-pub.png"} // Gambar dummy jika logo tidak ada
           alt="Company Logo"
           className="w-12 h-12 object-cover rounded-full mr-4"
         />

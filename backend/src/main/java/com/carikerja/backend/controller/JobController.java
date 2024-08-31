@@ -29,6 +29,11 @@ public class JobController {
         return jobRepository.findById(id).orElse(null);
     }
 
+    @GetMapping("/by-employer")
+    public List<Job> getJobsByEmployerId(@RequestParam Long employerId) {
+        return jobRepository.findByEmployerId(employerId);
+    }
+
     @PutMapping("/{id}")
     public Job updateJob(@PathVariable Long id, @RequestBody Job updatedJob) {
         Job job = jobRepository.findById(id).orElse(null);

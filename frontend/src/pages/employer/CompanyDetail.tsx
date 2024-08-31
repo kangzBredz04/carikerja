@@ -1,93 +1,234 @@
-import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate and useParams
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "../../utils";
+import {
+  IoLocationOutline,
+  IoGlobeOutline,
+  IoLogoInstagram,
+  IoLogoFacebook,
+  IoLogoLinkedin,
+  IoBookmarkOutline,
+} from "react-icons/io5";
+import JobCard from "../../components/JobCard";
 
 // Define the Company interface
 interface Company {
   id: number;
   user_id: number;
-  bannerImage: string;
   logoImage: string;
   companyName: string;
   slogan: string;
   address: string;
   companySize: "small" | "medium" | "large";
   industry: string;
+  verificationDate: string;
+  companyDescription: string;
   websiteLink: string;
   instagramLink: string;
   facebookLink: string;
   linkedinLink: string;
-  companyDescription: string;
 }
 
+interface Job {
+  id: number;
+  jobTitle: string;
+  jobField: string;
+  location: string;
+  minSalary: number;
+  maxSalary: number;
+  requiredEducation: string;
+  requiredExperience: string;
+  requiredSkills: string;
+  workSystem: string;
+  jobDescription: string;
+  employer: {
+    id: number;
+    logoImage: string;
+    companyName: string;
+    address: string;
+  };
+}
+
+const formatSalary = (minSalary: number, maxSalary: number) => {
+  const formatToJt = (salary: number) => {
+    const salaryInJt = salary / 1_000_000;
+    return salaryInJt >= 1
+      ? `${salaryInJt.toFixed(1).replace(/\.0$/, "")} jt`
+      : salary.toLocaleString();
+  };
+
+  return `${formatToJt(minSalary)} - ${formatToJt(maxSalary)}`;
+};
+
 export default function CompanyDetail() {
-  const { id } = useParams(); // Get company id from the route parameters
-  const navigate = useNavigate(); // Use navigate instead of useRouter
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [company, setCompany] = useState<Company | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   useEffect(() => {
     if (id) {
-      // Fetch company data based on ID
+      // Fetch company details
       api
-        .get(`/employers/${id}`) // Replace with the correct endpoint
+        .get(`/employers/${id}`)
         .then((response) => {
-          setCompany(response); // Assuming response contains the company data
+          setCompany(response); // Ensure response.data contains the company data
         })
         .catch((error) => {
           console.error("Error fetching company data:", error);
-          navigate("/error"); // Optionally navigate to an error page if needed
+          navigate("/error");
+        });
+
+      // Fetch jobs for the company
+      api
+        .get(`/jobs`)
+        .then((response) => {
+          setJobs(response); // Ensure response.data contains the job listings
+        })
+        .catch((error) => {
+          console.error("Error fetching job data:", error);
         });
     }
   }, [id, navigate]);
 
+  const filterJob = jobs.filter((job) => job.employer.id === company?.id);
+
   if (!company) {
-    return <p>Loading...</p>; // Display loading if company data is not yet available
+    return <p>Loading...</p>; // Show a loading state until company data is fetched
   }
 
+  const handleJobClick = (jobId: number) => {
+    navigate(`/job-list/job/${jobId}`);
+  };
+
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-4">{company.companyName}</h1>
-      <img
-        src={company.bannerImage}
-        alt={`${company.companyName} banner`}
-        className="w-full mb-4"
-      />
-      <img
-        src={company.logoImage}
-        alt={`${company.companyName} logo`}
-        className="w-24 h-24 mb-4"
-      />
-      <p>
-        <strong>Slogan:</strong> {company.slogan}
-      </p>
-      <p>
-        <strong>Address:</strong> {company.address}
-      </p>
-      <p>
-        <strong>Industry:</strong> {company.industry}
-      </p>
-      <p>
-        <strong>Company Size:</strong> {company.companySize}
-      </p>
-      <p>
-        <strong>Website:</strong>{" "}
-        <a href={company.websiteLink}>{company.websiteLink}</a>
-      </p>
-      <p>
-        <strong>Instagram:</strong>{" "}
-        <a href={company.instagramLink}>{company.instagramLink}</a>
-      </p>
-      <p>
-        <strong>Facebook:</strong>{" "}
-        <a href={company.facebookLink}>{company.facebookLink}</a>
-      </p>
-      <p>
-        <strong>LinkedIn:</strong>{" "}
-        <a href={company.linkedinLink}>{company.linkedinLink}</a>
-      </p>
-      <p>
-        <strong>Description:</strong> {company.companyDescription}
-      </p>
+    <div className="mx-auto h-full bg-white shadow-lg rounded-lg p-6">
+      {/* Company Info Header */}
+      <div className="flex items-center">
+        {/* Company Logo */}
+        <img
+          src={company.logoImage}
+          alt={`${company.companyName} logo`}
+          className="w-20 h-20 rounded-full border-2 border-gray-200"
+        />
+
+        {/* Company Name and Description */}
+        <div className="ml-4">
+          <h1 className="text-3xl font-bold text-gray-800 flex items-center">
+            {company.companyName}
+            <span className="ml-2 text-yellow-500" title="Verified">
+              ✔️
+            </span>
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">{company.slogan}</p>
+        </div>
+      </div>
+
+      {/* Company Details */}
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-600">
+        <div>
+          <p>
+            <span className="font-medium">📍 Location:</span> {company.address}
+          </p>
+          <p>
+            <span className="font-medium">🏢 Industry:</span> {company.industry}
+          </p>
+        </div>
+        <div>
+          <p>
+            <span className="font-medium">👥 Company Size:</span>{" "}
+            {company.companySize.charAt(0).toUpperCase() +
+              company.companySize.slice(1)}
+          </p>
+          <p>
+            <span className="font-medium">✔️ Verified:</span>{" "}
+            {company.verificationDate}
+          </p>
+        </div>
+      </div>
+
+      {/* Company Description */}
+      <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-inner">
+        <h2 className="text-xl font-semibold text-gray-700 mb-2">
+          About the Company
+        </h2>
+        <p className="text-gray-600 leading-relaxed">
+          {company.companyDescription}
+        </p>
+      </div>
+
+      {/* Contact Us Section */}
+      <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-inner">
+        <h2 className="text-xl font-semibold text-gray-700 mb-2">Contact Us</h2>
+        <div className="flex flex-col space-y-2 text-gray-600">
+          <p className="flex items-center">
+            <IoLocationOutline className="mr-2" />
+            {company.address}
+          </p>
+          <p className="flex items-center">
+            <IoGlobeOutline className="mr-2" />
+            <a
+              href={company.websiteLink}
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {company.websiteLink}
+            </a>
+          </p>
+          <p className="flex items-center">
+            <IoLogoInstagram className="mr-2" />
+            <a
+              href={company.instagramLink}
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Instagram
+            </a>
+          </p>
+          <p className="flex items-center">
+            <IoLogoFacebook className="mr-2" />
+            <a
+              href={company.facebookLink}
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Facebook
+            </a>
+          </p>
+          <p className="flex items-center">
+            <IoLogoLinkedin className="mr-2" />
+            <a
+              href={company.linkedinLink}
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+            </a>
+          </p>
+        </div>
+      </div>
+
+      {/* Job Listings Section */}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">
+          Job Openings
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {filterJob.length > 0 ? (
+            filterJob.map((job) => (
+              <JobCard key={job.id} job={job} onClick={handleJobClick} />
+            ))
+          ) : (
+            <p className="text-gray-600">
+              No job openings available at the moment.
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
