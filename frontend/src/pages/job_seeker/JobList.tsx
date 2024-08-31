@@ -1,18 +1,23 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaChevronUp } from "react-icons/fa";
-import { IoBookmarkOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../utils";
+import JobCard from "../../components/JobCard";
+import { FaSearch } from "react-icons/fa";
 
 interface Job {
   id: number;
-  title: string;
-  company: string;
+  jobTitle: string;
+  jobField: string;
+  jobType: string;
   location: string;
-  salary: string;
-  tags: string[];
-  hot: boolean;
-  active: boolean;
-  time: string;
+  minSalary: number;
+  maxSalary: number;
+  requiredEducation: string;
+  requiredExperience: string;
+  requiredSkills: string;
+  workSystem: string;
+  jobDescription: string;
 }
 
 export default function JobList() {
@@ -20,40 +25,74 @@ export default function JobList() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState<string>(""); // Untuk menangani pencarian
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([]);
+  const [selectedWorkPolicies, setSelectedWorkPolicies] = useState<string[]>(
+    []
+  );
+  const [selectedExperienceLevels, setSelectedExperienceLevels] = useState<
+    string[]
+  >([]);
+  const [selectedEducationLevels, setSelectedEducationLevels] = useState<
+    string[]
+  >([]);
   const topRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // Ambil data dari backend
+  // Fetch job data from backend
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await fetch("/jobs"); // Ganti dengan endpoint backend yang sesuai
-        if (response.ok) {
-          const data = await response.json();
-          setJobs(data);
-          setFilteredJobs(data); // Set initial data untuk filteredJobs
-        } else {
-          console.error("Error fetching jobs:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
-    };
+    api
+      .get("/jobs") // Replace with appropriate endpoint
+      .then((response) => {
+        setJobs(response);
+        setFilteredJobs(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [navigate]);
 
-    fetchJobs();
-  }, []);
-
-  // Update filteredJobs saat searchTerm berubah
+  // Update filteredJobs whenever searchTerm or filters change
   useEffect(() => {
-    const filtered = jobs.filter(
-      (job) =>
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = jobs.filter((job) => {
+      const matchesSearchTerm =
+        job.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.jobField.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesJobType =
+        selectedJobTypes.length === 0 || selectedJobTypes.includes(job.jobType);
+
+      const matchesWorkPolicy =
+        selectedWorkPolicies.length === 0 ||
+        selectedWorkPolicies.includes(job.workSystem);
+
+      const matchesExperience =
+        selectedExperienceLevels.length === 0 ||
+        selectedExperienceLevels.includes(job.requiredExperience);
+
+      const matchesEducation =
+        selectedEducationLevels.length === 0 ||
+        selectedEducationLevels.includes(job.requiredEducation);
+
+      return (
+        matchesSearchTerm &&
+        matchesJobType &&
+        matchesWorkPolicy &&
+        matchesExperience &&
+        matchesEducation
+      );
+    });
+
     setFilteredJobs(filtered);
-    setCurrentPage(1); // Reset ke halaman 1 saat melakukan pencarian
-  }, [searchTerm, jobs]);
+    setCurrentPage(1); // Reset to page 1 when filters change
+  }, [
+    searchTerm,
+    jobs,
+    selectedJobTypes,
+    selectedWorkPolicies,
+    selectedExperienceLevels,
+    selectedEducationLevels,
+  ]);
 
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
@@ -73,6 +112,48 @@ export default function JobList() {
     setSearchTerm(event.target.value);
   };
 
+  const handleJobTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSelectedJobTypes((prev) =>
+      prev.includes(value)
+        ? prev.filter((type) => type !== value)
+        : [...prev, value]
+    );
+  };
+
+  const handleWorkPolicyChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    setSelectedWorkPolicies((prev) =>
+      prev.includes(value)
+        ? prev.filter((policy) => policy !== value)
+        : [...prev, value]
+    );
+  };
+
+  const handleExperienceLevelChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    setSelectedExperienceLevels((prev) =>
+      prev.includes(value)
+        ? prev.filter((level) => level !== value)
+        : [...prev, value]
+    );
+  };
+
+  const handleEducationLevelChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    setSelectedEducationLevels((prev) =>
+      prev.includes(value)
+        ? prev.filter((level) => level !== value)
+        : [...prev, value]
+    );
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen relative">
       <div ref={topRef}></div>
@@ -80,13 +161,13 @@ export default function JobList() {
         <div className="flex items-center gap-4">
           <input
             type="text"
-            placeholder="Cari lowongan"
+            placeholder="Search jobs"
             value={searchTerm}
             onChange={handleSearchChange}
             className="px-4 py-2 border rounded-lg w-4/5"
           />
           <button className="w-1/5 px-4 py-2 bg-blue-600 text-white rounded-lg">
-            CARI
+            Search
           </button>
         </div>
       </div>
@@ -96,94 +177,168 @@ export default function JobList() {
           <div className="bg-white rounded-lg shadow-md h-full">
             {/* Filter Sidebar */}
             <div className="bg-white p-4 rounded-lg shadow-md h-full">
-              {/* Filter Sidebar bisa disini */}
+              {/* Prioritize */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Prioritize</h3>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg"
+                    // Add functionality for prioritize options if needed
+                  >
+                    Most Relevant
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-white border rounded-lg"
+                    // Add functionality for prioritize options if needed
+                  >
+                    Newest
+                  </button>
+                </div>
+              </div>
+
+              {/* Job Types */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Job Type</h3>
+                <div className="flex flex-col gap-2">
+                  {["Contract", "Internship", "Part Time", "Freelance"].map(
+                    (type) => (
+                      <label key={type} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          value={type}
+                          checked={selectedJobTypes.includes(type)}
+                          onChange={handleJobTypeChange}
+                          className="form-checkbox"
+                        />
+                        {type}
+                      </label>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* Work Policy */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Work Policy</h3>
+                <div className="flex flex-col gap-2">
+                  {["On-site", "Hybrid", "Remote"].map((policy) => (
+                    <label key={policy} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        value={policy}
+                        checked={selectedWorkPolicies.includes(policy)}
+                        onChange={handleWorkPolicyChange}
+                        className="form-checkbox"
+                      />
+                      {policy}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Experience Level */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Experience Level</h3>
+                <div className="flex flex-col gap-2">
+                  {[
+                    "Less than a year",
+                    "1-3 years",
+                    "3-5 years",
+                    "More than 5 years",
+                  ].map((experience) => (
+                    <label key={experience} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        value={experience}
+                        checked={selectedExperienceLevels.includes(experience)}
+                        onChange={handleExperienceLevelChange}
+                        className="form-checkbox"
+                      />
+                      {experience}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Education Level */}
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Education Level</h3>
+                <div className="flex flex-col gap-2">
+                  {[
+                    "High School",
+                    "Associate's Degree",
+                    "Bachelor's Degree",
+                    "Master's Degree",
+                  ].map((education) => (
+                    <label key={education} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        value={education}
+                        checked={selectedEducationLevels.includes(education)}
+                        onChange={handleEducationLevelChange}
+                        className="form-checkbox"
+                      />
+                      {education}
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="w-3/4">
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">
-              Info Lowongan Kerja di Indonesia
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              {currentJobs.map((job, index) => (
-                <div
-                  key={index}
-                  className="border-2 border-gray-200 rounded-md p-4 mb-4 cursor-pointer"
-                  onClick={() => handleJobClick(job.id)}
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-semibold">{job.title}</h3>
-                    <span className="text-gray-600">{job.salary}</span>
-                  </div>
-                  <p className="text-gray-500">{job.company}</p>
-                  <p className="text-gray-500 mb-2">{job.location}</p>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {job.tags.map((tag, tagIndex) => (
-                      <span
-                        key={tagIndex}
-                        className="bg-gray-100 px-2 py-1 rounded text-sm text-gray-600"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {job.hot && (
-                        <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-                          HOT
-                        </span>
-                      )}
-                      {job.active && (
-                        <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-                          Aktif Merekrut
-                        </span>
-                      )}
-                      <span className="text-gray-500 text-sm">{job.time}</span>
-                    </div>
-                    <IoBookmarkOutline size={20} className="cursor-pointer" />
-                  </div>
+        <div className="w-3/4 pl-4">
+          <div className="bg-white rounded-lg shadow-md p-4">
+            {filteredJobs.length === 0 ? (
+              <div className="text-center text-gray-500 flex flex-col items-center gap-2">
+                <FaSearch className="text-4xl text-gray-400" />
+                <p>Lowongan kerja tidak ditemukan !!!</p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                  {currentJobs.map((job) => (
+                    <JobCard
+                      key={job.id}
+                      job={job}
+                      onClick={() => handleJobClick(job.id)}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <div className="flex justify-between items-center mt-4">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                className={`px-4 py-2 ${
-                  currentPage === 1 ? "bg-gray-300" : "bg-blue-600 text-white"
-                } rounded-lg`}
-              >
-                Previous
-              </button>
-              <span>
-                Halaman {currentPage} dari {totalPages}
-              </span>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                className={`px-4 py-2 ${
-                  currentPage === totalPages
-                    ? "bg-gray-300"
-                    : "bg-blue-600 text-white"
-                } rounded-lg`}
-              >
-                Next
-              </button>
-            </div>
+                <div className="mt-6 flex justify-between items-center">
+                  <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                  >
+                    Previous
+                  </button>
+                  <span>
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      <button
-        onClick={handleScrollToTop}
-        className="fixed bottom-4 right-4 p-4 bg-blue-600 text-white rounded-full shadow-lg"
-      >
-        <FaChevronUp />
-      </button>
+      <div className="fixed bottom-4 right-4">
+        <button
+          onClick={handleScrollToTop}
+          className="px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg"
+        >
+          <FaChevronUp />
+        </button>
+      </div>
     </div>
   );
 }

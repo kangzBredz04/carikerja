@@ -1,55 +1,70 @@
 import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { FaBookmark, FaShareAlt, FaRocket } from "react-icons/fa";
+
+interface Job {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  description: string;
+  requirements: string[];
+  skills: string[];
+  lastUpdated: string;
+  recruiter: {
+    name: string;
+    title: string;
+  };
+  companyDetails: {
+    name: string;
+    industry: string;
+    size: string;
+    address: string;
+  };
+  relatedJobs: {
+    title: string;
+    company: string;
+    location: string;
+    salary: string;
+    lastUpdated: string;
+    level: string;
+    experience: string;
+  }[];
+}
 
 export default function JobDetail() {
   const { id } = useParams<{ id: string }>();
+  const [job, setJob] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Dummy data untuk pekerjaan, ambil data detail berdasarkan ID dari URL
-  const job = {
-    id,
-    title: "Magento Developer (English Active)",
-    company: "PT Sigma Global Teknologi",
-    location: "Tangerang, Banten, Indonesia",
-    salary: "Rp 9-11 jt/Bulan",
-    description: `
-      Bachelor's degree in Computer Science or related field.
-      Experience in Magento development for at least 2 years.
-      Back-End Web Development, Object-Oriented Programming (OOP), and Programming skills.
-      Knowledge of PHP, MySQL, HTML, CSS, and JavaScript.
-      Proficiency in written and verbal English language.
-      Ability to work on-site in BSD Area.
-    `,
-    requirements: ["1-3 tahun pengalaman", "Minimal Sarjana (S1)", "2-3 tahun"],
-    skills: ["Magento", "Back-End Web Development", "Web Development"],
-    lastUpdated: "21 hari yang lalu",
-    recruiter: {
-      name: "Filnes Afryani",
-      title: "HRD - PT Sigma Global Teknologi",
-    },
-    companyDetails: {
-      name: "PT Sigma Global Teknologi",
-      industry: "Information Technology and Services",
-      size: "51-200 karyawan",
-      address:
-        "Sona Topas Tower Lt. 12, Jl. Jend. Sudirman, RT.4/RW.2, Kuningan, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12920",
-    },
-    relatedJobs: [
-      {
-        title: "Senior .NET Engineer with AWS Knowledge",
-        company: "PT Crescent Solution Indonesia",
-        location: "Tangerang, Banten",
-        salary: "Rp 8-13 jt",
-        lastUpdated: "21 hari yang lalu",
-        level: "Minimal Sarjana (S1)",
-        experience: "1-3 tahun pengalaman",
-      },
-      // Tambahkan data loker lain sesuai kebutuhan
-    ],
-  };
+  useEffect(() => {
+    const fetchJobDetail = async () => {
+      try {
+        const response = await fetch(`/api/jobs/${id}`); // Replace with your API endpoint
+        if (!response.ok) {
+          throw new Error("Failed to fetch job details");
+        }
+        const jobData: Job = await response.json();
+        setJob(jobData);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobDetail();
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!job) return <div>Job not found</div>;
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className=" mx-auto bg-white p-8 rounded-lg shadow-lg">
+      <div className="mx-auto bg-white p-8 rounded-lg shadow-lg">
         {/* Header Job */}
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -59,11 +74,11 @@ export default function JobDetail() {
             <p className="text-gray-600">{job.location}</p>
           </div>
           <div>
-            {/* Tombol Aksi */}
+            {/* Action Buttons */}
             <div className="flex flex-col gap-5">
               <button className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700">
                 <FaRocket />
-                Lamar Cepat
+                Apply Fast
               </button>
               <div className="flex gap-4">
                 <button className="flex items-center gap-2 px-6 py-2 bg-gray-100 text-gray-600 rounded-lg shadow-lg hover:bg-gray-200">
@@ -72,22 +87,22 @@ export default function JobDetail() {
                 </button>
                 <button className="flex items-center gap-2 px-6 py-2 bg-gray-100 text-gray-600 rounded-lg shadow-lg hover:bg-gray-200">
                   <FaShareAlt />
-                  Bagikan
+                  Share
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Deskripsi Pekerjaan */}
+        {/* Job Description */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold">Deskripsi Pekerjaan</h2>
+          <h2 className="text-lg font-semibold">Job Description</h2>
           <p className="text-gray-700">{job.description}</p>
         </div>
 
-        {/* Kualifikasi */}
+        {/* Qualifications */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Kualifikasi</h2>
+          <h2 className="text-lg font-semibold mb-2">Qualifications</h2>
           <div className="flex flex-wrap gap-2">
             {job.requirements.map((requirement, index) => (
               <span
@@ -100,11 +115,9 @@ export default function JobDetail() {
           </div>
         </div>
 
-        {/* Keahlian yang Dibutuhkan */}
+        {/* Required Skills */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">
-            Keahlian yang Dibutuhkan
-          </h2>
+          <h2 className="text-lg font-semibold mb-2">Required Skills</h2>
           <div className="flex flex-wrap gap-2">
             {job.skills.map((skill, index) => (
               <span
@@ -117,31 +130,31 @@ export default function JobDetail() {
           </div>
         </div>
 
-        {/* Informasi Lain */}
+        {/* Other Information */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Diupdate Terakhir</h2>
+          <h2 className="text-lg font-semibold mb-2">Last Updated</h2>
           <p className="text-gray-600">{job.lastUpdated}</p>
         </div>
 
-        {/* Perekrut */}
+        {/* Recruiter Information */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Perekrut</h2>
+          <h2 className="text-lg font-semibold mb-2">Recruiter</h2>
           <p className="text-gray-700">{job.recruiter.name}</p>
           <p className="text-gray-600">{job.recruiter.title}</p>
         </div>
 
-        {/* Tentang Perusahaan */}
+        {/* Company Details */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Tentang Perusahaan</h2>
+          <h2 className="text-lg font-semibold mb-2">Company Details</h2>
           <p className="text-gray-700">{job.companyDetails.name}</p>
           <p className="text-gray-600">{job.companyDetails.industry}</p>
           <p className="text-gray-600">{job.companyDetails.size}</p>
           <p className="text-gray-600">{job.companyDetails.address}</p>
         </div>
 
-        {/* Pekerjaan Terkait */}
+        {/* Related Jobs */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Pekerjaan Terkait</h2>
+          <h2 className="text-lg font-semibold mb-2">Related Jobs</h2>
           <div className="grid grid-cols-2 gap-4">
             {job.relatedJobs.map((relatedJob, index) => (
               <div
