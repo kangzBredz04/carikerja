@@ -52,7 +52,7 @@ public class JobController {
             job.setRequiredSkills(updatedJob.getRequiredSkills());
             job.setRequiredEducation(updatedJob.getRequiredEducation());
             job.setRequiredExperience(updatedJob.getRequiredExperience());
-            job.setCvLink(updatedJob.getCvLink());
+            job.setApplicants(updatedJob.getApplicants());
             return jobRepository.save(job);
         }
         return null;

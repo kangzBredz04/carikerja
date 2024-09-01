@@ -11,7 +11,7 @@ import CompanyList from "./pages/employer/CompanyList.tsx";
 import JobList from "./pages/job_seeker/JobList.tsx";
 import JobDetail from "./pages/job_seeker/JobDetail.tsx";
 import ProfilePage from "./pages/job_seeker/Profile.tsx";
-import Employe from "./pages/employer/Employe.tsx";
+import Employe from "./pages/employer/Employe.js";
 import RegisterFormEmploye from "./pages/employer/RegisterFormEmploye.tsx";
 import LoginFormEmploye from "./pages/employer/LoginFormEmploye.tsx";
 import ImageUpload from "./pages/ImageUpload.tsx";

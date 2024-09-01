@@ -34,6 +34,7 @@ public class Job {
     private String requiredSkills;
     private String requiredEducation;
     private String requiredExperience;
+    private Integer applicants;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp

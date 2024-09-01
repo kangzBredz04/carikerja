@@ -1,8 +1,8 @@
-import { Employer } from "./Employer";
+
 
 export interface Job {
     id: number;
-    employer: Employer;
+    employerId: number;
     jobField: string;
     jobTitle: string;
     jobType: 'full-time' | 'part-time' | 'internship' | 'contract' | 'freelance';
@@ -17,4 +17,6 @@ export interface Job {
     requiredSkills: string;
     requiredEducation: string;
     requiredExperience: string;
+    createdAt:Date;
+    applicants: number;
   }

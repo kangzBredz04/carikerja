@@ -65,6 +65,14 @@ export default function HeaderEmpolye() {
         </div>
 
         <div className="flex items-center space-x-10">
+          {isLoggedIn && (
+            <Link
+              to="/"
+              className="py-1 px-3 bg-blue-600 text-white font-bold rounded-lg"
+            >
+              PASANG LOKER
+            </Link>
+          )}
           <Link
             onClick={(e) => {
               e.preventDefault();
@@ -106,13 +114,7 @@ export default function HeaderEmpolye() {
                       to="/user/profile"
                       className="block px-4 py-2 hover:bg-gray-100"
                     >
-                      Profil Saya
-                    </Link>
-                    <Link
-                      to="/applications"
-                      className="block px-4 py-2 hover:bg-gray-100"
-                    >
-                      Lamaran Saya
+                      Profil Perusahaan
                     </Link>
                     <div
                       onClick={handleLogout}
