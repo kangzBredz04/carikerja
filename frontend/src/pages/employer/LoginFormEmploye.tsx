@@ -26,7 +26,7 @@ export default function LoginFormEmploye() {
         alert("Login Berhasil");
         localStorage.setItem("token", response.token);
         localStorage.setItem("email", email);
-        location.href = "/employe/dashboard";
+        location.href = "/employe";
       })
       .catch(() => {
         alert("Email atau password salah");

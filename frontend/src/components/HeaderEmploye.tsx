@@ -6,10 +6,6 @@ import { api } from "../utils";
 
 export default function HeaderEmpolye() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({
-    name: "",
-    avatar: "/Elon Musk.jpeg",
-  });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate(); // Hook for navigation
 
@@ -35,7 +31,7 @@ export default function HeaderEmpolye() {
       .then(() => {
         localStorage.removeItem("token"); // Remove token from localStorage
         setIsLoggedIn(false); // Update login state
-        navigate("/"); // Redirect to home page or login page
+        navigate("/employe"); // Redirect to home page or login page
       })
       .catch((error) => {
         console.error("Logout failed", error);
@@ -46,16 +42,24 @@ export default function HeaderEmpolye() {
     <header className="bg-white border-b shadow-sm sticky top-0 z-50 font-KumbhSans">
       <div className="container mx-auto py-4 flex justify-between items-center">
         <div className="flex items-center space-x-5">
-          <Link
-            to="/employe/dashboard"
-            className="text-3xl font-bold tracking-widest"
-          >
+          <Link to="/employe" className="text-3xl font-bold tracking-widest">
             KASIHKERJA
           </Link>
-          <Link to="/biaya-faq" className="text-base hover:text-gray-500">
+          {isLoggedIn && (
+            <Link
+              to="/employe/dashboard"
+              className="text-base hover:text-gray-500"
+            >
+              DASHBOARD
+            </Link>
+          )}
+          <Link
+            to="/employe/biaya&faq"
+            className="text-base hover:text-gray-500"
+          >
             BIAYA & FAQ
           </Link>
-          <Link to="/blog" className="hover:text-gray-500 text-base">
+          <Link to="/employe/blog" className="hover:text-gray-500 text-base">
             BLOG
           </Link>
         </div>
@@ -77,7 +81,7 @@ export default function HeaderEmpolye() {
 
               <div className="relative">
                 <img
-                  src={user.avatar}
+                  src="https://i.pinimg.com/1200x/e8/d7/d0/e8d7d05f392d9c2cf0285ce928fb9f4a.jpg"
                   alt="User Avatar"
                   className="rounded-full w-8 h-8 cursor-pointer"
                   onClick={toggleDropdown}

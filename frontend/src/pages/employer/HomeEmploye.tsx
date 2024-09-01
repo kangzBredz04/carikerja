@@ -2,7 +2,14 @@ export default function HomeEmploye() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-white">
       {/* Section 1 */}
-      <section className="w-full flex flex-col md:flex-row justify-between items-center p-10 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300">
+      <section className="w-full flex flex-col gap-7 md:flex-row justify-between items-center p-10 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300">
+        <div>
+          <img
+            className="rounded-lg"
+            src="https://i.pinimg.com/1200x/68/24/69/68246973d3a0a57d3cdf21d9ecbb802b.jpg"
+            alt=""
+          />
+        </div>
         <div className="max-w-md text-center md:text-left">
           <h1 className="text-3xl font-bold text-gray-900">
             Pasang Iklan Lowongan Kerja Gratis!
@@ -12,28 +19,6 @@ export default function HomeEmploye() {
             sekarang dan posting pekerjaan Anda secara gratis:
           </p>
         </div>
-        <form className="mt-8 md:mt-0 bg-white p-6 rounded-lg shadow-lg w-full md:w-1/3">
-          <div className="grid grid-cols-1 gap-4">
-            <input
-              className="border p-2 rounded col-span-2"
-              type="email"
-              placeholder="Email Kerja"
-            />
-            <input
-              className="border p-2 rounded col-span-2"
-              type="tel"
-              placeholder="+62 Nomor Telepon"
-            />
-            <input
-              className="border p-2 rounded col-span-2"
-              type="password"
-              placeholder="Masukkan Password"
-            />
-          </div>
-          <button className="mt-4 w-full bg-blue-600 hover:bg-blue-800 text-white p-2 rounded transition">
-            DAFTAR SEKARANG
-          </button>
-        </form>
       </section>
 
       {/* Section 2 */}

@@ -2,6 +2,9 @@ package com.carikerja.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Data
@@ -31,5 +34,8 @@ public class Job {
     private String requiredSkills;
     private String requiredEducation;
     private String requiredExperience;
-    private String cvLink;
+
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }

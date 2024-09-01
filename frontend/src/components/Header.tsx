@@ -6,10 +6,6 @@ import { api } from "../utils";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({
-    name: "",
-    avatar: "/Elon Musk.jpeg",
-  });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate(); // Hook for navigation
 
@@ -75,7 +71,7 @@ export default function Header() {
 
               <div className="relative">
                 <img
-                  src={user.avatar}
+                  src="https://i.pinimg.com/1200x/e8/d7/d0/e8d7d05f392d9c2cf0285ce928fb9f4a.jpg"
                   alt="User Avatar"
                   className="rounded-full w-8 h-8 cursor-pointer"
                   onClick={toggleDropdown}
@@ -123,7 +119,7 @@ export default function Header() {
               <Link to="/user/register">DAFTAR</Link>
               <Link to="/user/login">MASUK</Link>
               <Link
-                to="/employe/dashboard"
+                to="/employe"
                 className="py-1 px-3 border-blue-600 text-blue-600 font-bold border-[1px] rounded-lg"
               >
                 UNTUK KASIHKERJA

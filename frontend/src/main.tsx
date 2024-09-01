@@ -17,6 +17,10 @@ import LoginFormEmploye from "./pages/employer/LoginFormEmploye.tsx";
 import ImageUpload from "./pages/ImageUpload.tsx";
 import CompanyDetail from "./pages/employer/CompanyDetail.tsx";
 import HomeEmploye from "./pages/employer/HomeEmploye.tsx";
+import EmployeErrorPage from "./pages/EmployeErrorPage.tsx";
+import Dashboard from "./pages/employer/Dashboard.tsx";
+import BiayaFaqPage from "./pages/employer/BiayaFaqPage.tsx";
+import BlogPage from "./pages/employer/BlogPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -65,11 +69,23 @@ const router = createBrowserRouter([
   {
     path: "/employe",
     element: <Employe />,
-    errorElement: <ErrorPage />,
+    errorElement: <EmployeErrorPage />,
     children: [
       {
         path: "/employe",
         element: <HomeEmploye />,
+      },
+      {
+        path: "/employe/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "/employe/biaya&faq",
+        element: <BiayaFaqPage />,
+      },
+      {
+        path: "/employe/blog",
+        element: <BlogPage />,
       },
       {
         path: "/employe/register",

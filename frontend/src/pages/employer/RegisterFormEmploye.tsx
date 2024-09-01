@@ -119,12 +119,6 @@ export default function RegisterFormEmploye() {
           <h2 className="text-2xl font-bold text-gray-900">Selamat Datang!</h2>
           <p>Sebelum mulai, kami ingin lebih mengenal Anda</p>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* <input
-              type="text"
-              name="name"
-              placeholder="Nama Lengkap"
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            /> */}
             <input
               type="email"
               name="email"
