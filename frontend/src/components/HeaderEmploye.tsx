@@ -67,7 +67,7 @@ export default function HeaderEmpolye() {
         <div className="flex items-center space-x-10">
           {isLoggedIn && (
             <Link
-              to="/"
+              to="/employe/add-job"
               className="py-1 px-3 bg-blue-600 text-white font-bold rounded-lg"
             >
               PASANG LOKER

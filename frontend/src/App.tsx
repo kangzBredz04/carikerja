@@ -14,7 +14,7 @@ function App() {
       const data = response?.filter(
         (res) => res.email == localStorage.getItem("email")
       );
-      setUserId(data[0].id);
+      setUserId(data[0]?.id);
     });
   }, [userId]);
   return (

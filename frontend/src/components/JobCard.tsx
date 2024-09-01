@@ -45,7 +45,7 @@ export default function JobCard({ job, onClick }: JobCardProps) {
     >
       <div className="flex items-center mb-4">
         <img
-          src={job.employer.logoImage || "/logo-pub.png"} // Gambar dummy jika logo tidak ada
+          src={job.employer?.logoImage || "/logo-pub.png"} // Gambar dummy jika logo tidak ada
           alt="Company Logo"
           className="w-12 h-12 object-cover rounded-full mr-4"
         />
@@ -73,10 +73,10 @@ export default function JobCard({ job, onClick }: JobCardProps) {
       </div>
 
       <p className="text-gray-500 mb-2">
-        {job.employer.companyName || "Anonymous"}
+        {job.employer?.companyName || "Anonymous"}
       </p>
       <p className="text-gray-500 mb-2">
-        {job.employer.address || "Alamat tidak ditemukan"}
+        {job.employer?.address || "Alamat tidak ditemukan"}
       </p>
 
       <div className="flex items-center justify-between">

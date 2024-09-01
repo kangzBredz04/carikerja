@@ -5,6 +5,7 @@ import { Job } from "../../types/Job";
 
 export default function Dashboard() {
   const { jobs, employeId } = useContext(EmployeContext);
+  console.log(jobs);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -14,9 +15,9 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {jobs
-          ?.filter((job) => job.employer.id == employeId)
+          ?.filter((job) => job.employer?.id == employeId)
           ?.map((job: Job) => (
-            <JobCardDashboard job={job} />
+            <JobCardDashboard key={job.id} job={job} />
           ))}
       </div>
       <div className="flex justify-center items-center min-h-[200px] mt-8">

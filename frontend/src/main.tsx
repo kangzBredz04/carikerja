@@ -21,6 +21,7 @@ import EmployeErrorPage from "./pages/EmployeErrorPage.tsx";
 import Dashboard from "./pages/employer/Dashboard.tsx";
 import BiayaFaqPage from "./pages/employer/BiayaFaqPage.tsx";
 import BlogPage from "./pages/employer/BlogPage.tsx";
+import AddJob from "./pages/employer/AddJob.tsx";
 
 const router = createBrowserRouter([
   {
@@ -86,6 +87,10 @@ const router = createBrowserRouter([
       {
         path: "/employe/blog",
         element: <BlogPage />,
+      },
+      {
+        path: "/employe/add-job",
+        element: <AddJob />,
       },
       {
         path: "/employe/register",

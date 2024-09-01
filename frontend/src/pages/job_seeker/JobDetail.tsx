@@ -80,7 +80,7 @@ export default function JobDetail() {
               {job.maxSalary.toLocaleString()} IDR
             </p>
             <p className="text-gray-600">
-              {job.employer.companyName || "No company info"}
+              {job.employer?.companyName || "No company info"}
             </p>
             <p className="text-gray-600">{job.location}</p>
           </div>
@@ -135,11 +135,11 @@ export default function JobDetail() {
         {/* Employer Details */}
         <div className="mb-4">
           <h2 className="text-lg font-semibold mb-2">Employer Details</h2>
-          <p className="text-gray-700">{job.employer.companyName}</p>
-          <p className="text-gray-600">{job.employer.address}</p>
-          <p className="text-gray-600">{job.employer.industry}</p>
-          <p className="text-gray-600">{job.employer.companySize}</p>
-          <p className="text-gray-600">{job.employer.companyDescription}</p>
+          <p className="text-gray-700">{job.employer?.companyName}</p>
+          <p className="text-gray-600">{job.employer?.address}</p>
+          <p className="text-gray-600">{job.employer?.industry}</p>
+          <p className="text-gray-600">{job.employer?.companySize}</p>
+          <p className="text-gray-600">{job.employer?.companyDescription}</p>
         </div>
       </div>
     </div>

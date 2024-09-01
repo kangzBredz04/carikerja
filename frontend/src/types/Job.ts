@@ -2,7 +2,9 @@
 
 export interface Job {
     id: number;
-    employerId: number;
+    employer: {
+      id: number
+    };
     jobField: string;
     jobTitle: string;
     jobType: 'full-time' | 'part-time' | 'internship' | 'contract' | 'freelance';
