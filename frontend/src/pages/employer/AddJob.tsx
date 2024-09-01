@@ -3,8 +3,12 @@ import { MdClose } from "react-icons/md";
 import { api } from "../../utils";
 import { Skill } from "../../types/Skill";
 import { EmployeContext } from "./Employe";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Job } from "../../types/Job";
 
 export default function TambahJob() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { employeId } = useContext(EmployeContext);
   const [formData, setFormData] = useState({
     jobField: "",
@@ -32,7 +36,16 @@ export default function TambahJob() {
 
   useEffect(() => {
     api.get("/skills").then((res) => setAvailableSkills(res));
-  }, []);
+    const state = location.state as { job?: Job };
+    if (state?.job) {
+      setFormData(state.job);
+      if (state.job.requiredSkills) {
+        setSelectedSkills(state.job.requiredSkills.split(","));
+      }
+    }
+  }, [location.state]);
+
+  console.log(formData);
 
   // State untuk menyimpan skill yang dipilih dan hasil pencarian
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
@@ -55,7 +68,37 @@ export default function TambahJob() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/jobs", formData);
+      if (formData.id) {
+        // Buat objek khusus untuk update data yang hanya berisi field yang diperlukan
+        const updateData = {
+          jobField: formData.jobField,
+          jobTitle: formData.jobTitle,
+          jobType: formData.jobType,
+          workSystem: formData.workSystem,
+          location: formData.location,
+          jobDescription: formData.jobDescription,
+          minSalary: formData.minSalary,
+          maxSalary: formData.maxSalary,
+          minAge: formData.minAge,
+          maxAge: formData.maxAge,
+          genderPreference: formData.genderPreference,
+          requiredSkills: formData.requiredSkills,
+          requiredEducation: formData.requiredEducation,
+          requiredExperience: formData.requiredExperience,
+        };
+
+        // Lakukan update data menggunakan PUT request
+        await api.put(`/jobs/${formData.id}`, updateData);
+        alert("Data lowongan kerja berhasil diedit");
+        window.location.href = "/employe/dashboard"; // Arahkan ke dashboard setelah update
+      } else {
+        // Lakukan tambah data jika formData.id tidak ada
+        await api.post("/jobs", formData);
+        alert("Data lowongan kerja berhasil ditambah");
+        window.location.href = "/employe/dashboard"; // Arahkan ke dashboard setelah tambah
+      }
+
+      // Reset form setelah submit berhasil
       setFormData({
         jobField: "",
         jobTitle: "",
@@ -77,11 +120,8 @@ export default function TambahJob() {
         createdAt: new Date().toISOString(), // Set tanggal saat ini
         applicants: 0, // Set jumlah pelamar
       });
-      window.location.reload(); // Optional: Reload page
-      alert("Data lowongan kerja berhasil ditambah");
-      window.location.href = "/employe/dashboard";
     } catch (error) {
-      console.log(error);
+      console.log(error); // Log error jika ada
     }
   };
 
@@ -124,7 +164,7 @@ export default function TambahJob() {
         className="bg-white p-8 rounded-lg shadow-lg w-full"
       >
         <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">
-          Tambah Lowongan Pekerjaan
+          {formData.id ? "Edit" : "Tambah"} Lowongan Pekerjaan
         </h2>
 
         {/* Job Field dan Job Title */}
@@ -395,7 +435,7 @@ export default function TambahJob() {
           type="submit"
           className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 font-bold text-lg mt-6"
         >
-          Tambah Lowongan
+          {formData.id ? "Edit" : "Tambah"} Lowongan
         </button>
       </form>
     </div>

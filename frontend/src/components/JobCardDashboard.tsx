@@ -2,9 +2,11 @@ import { Job } from "../types/Job";
 import { FaClock, FaCalendarAlt } from "react-icons/fa";
 import { IoLocationSharp } from "react-icons/io5";
 import { api } from "../utils";
+import { useNavigate } from "react-router-dom";
 
 export default function JobCardDashboard({ job }: { job: Job }) {
   const { jobTitle, jobType, location, createdAt, applicants, id } = job;
+  const navigate = useNavigate();
 
   return (
     <div className="bg-white shadow-md flex flex-col gap-2 rounded-lg p-4 border border-gray-200">
@@ -42,7 +44,10 @@ export default function JobCardDashboard({ job }: { job: Job }) {
         <button className="bg-blue-500 text-white py-1 w-1/4 rounded hover:bg-blue-600">
           Kelola Pelamar
         </button>
-        <button className="bg-yellow-500 text-white py-1 w-1/4 rounded hover:bg-yellow-600">
+        <button
+          onClick={() => navigate("/employe/add-job", { state: { job } })}
+          className="bg-yellow-500 text-white py-1 w-1/4 rounded hover:bg-yellow-600"
+        >
           Edit
         </button>
         <button
