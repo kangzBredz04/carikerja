@@ -1,16 +1,6 @@
-// Dashboard.tsx
 import React, { useState } from "react";
+import { Job } from "../../types/Job";
 
-export interface Job {
-  id: number;
-  title: string;
-  type: string;
-  address: string;
-  createdAt: string;
-  applicants: number;
-}
-
-// Sample data
 const mockJobs: Job[] = [
   {
     id: 1,
