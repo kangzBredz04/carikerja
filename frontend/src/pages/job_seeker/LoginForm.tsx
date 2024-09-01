@@ -25,6 +25,7 @@ const LoginForm: React.FC = () => {
         location.reload();
         alert("Login Berhasil");
         localStorage.setItem("token", response.token);
+        localStorage.setItem("email", email);
         location.href = "/";
       })
       .catch(() => {

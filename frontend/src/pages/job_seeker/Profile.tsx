@@ -1,6 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, ChangeEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../utils";
+import { AllContext } from "../../App";
+
+interface SocialLinks {
+  portfolio: string;
+  linkedin: string;
+  github: string;
+  instagram: string;
+}
 
 interface Profile {
   name: string;
@@ -17,356 +25,222 @@ interface Profile {
   educationDetails: string;
   skills: string;
   jobInterest: string;
-  socialLinks: {
-    portfolio: string;
-    linkedin: string;
-    github: string;
-    instagram: string;
-  };
+  socialLinks: SocialLinks;
   organizationExperience: string;
 }
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [profile, setProfile] = useState<Profile>({
-    name: "Wahyu",
-    role: "Instruktur",
-    whatsapp: "+628889387769",
-    email: "wabredz1234@gmail.com",
-    location: "Bandung, Jawa Barat",
-    age: "21",
-    education: "Sarjana (S1)",
-    gender: "Laki-laki",
-    experience: "Belum ada pengalaman kerja",
-    about: "Saya seorang instruktur yang berdedikasi...",
-    workExperience: "Belum ada pengalaman kerja",
-    educationDetails: "Sarjana S1 - Universitas Indonesia",
-    skills: "React, TypeScript, Tailwind CSS",
-    jobInterest: "Software Development",
-    socialLinks: {
-      portfolio: "https://myportfolio.com",
-      linkedin: "https://linkedin.com/in/wahyu",
-      github: "https://github.com/wahyu",
-      instagram: "https://instagram.com/wahyu",
-    },
-    organizationExperience: "Ketua BEM Universitas Indonesia 2022",
-  });
+  const [isEditingBasic, setIsEditingBasic] = useState(false);
+  const [isEditingAbout, setIsEditingAbout] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const { userId } = useContext(AllContext);
 
   useEffect(() => {
     api
-      .get("/auth/me")
+      .get(`/job-seekers/${userId}`) // Replace with your API endpoint
       .then((response) => {
         console.log(response);
-        // if (response.status === 403) {
-        //   navigate("/user/login");
-        // } else if (response.data) {
-        //   setIsLoggedIn(true);
-        // }
+        setProfile({
+          name: response.name,
+          role: response.role,
+          whatsapp: response.phoneNumber,
+          email: response.email,
+          location: response.location,
+          age: response.age,
+          education: response.hasWorkExperience
+            ? "Experience"
+            : "No Experience",
+          gender: response.gender === "male" ? "Laki-laki" : "Perempuan",
+          experience: response.hasWorkExperience
+            ? "Has experience"
+            : "No experience",
+          about: response.aboutMe,
+          workExperience: response.hasWorkExperience
+            ? "Has work experience"
+            : "No work experience",
+          educationDetails: "Details not provided", // Placeholder if not available
+          skills: "Skills not provided", // Placeholder if not available
+          jobInterest: "Job interest not provided", // Placeholder if not available
+          socialLinks: {
+            portfolio: response.portfolioLink,
+            linkedin: response.linkedinLink || "",
+            github: response.githubLink,
+            instagram: "", // Placeholder if not available
+          },
+          organizationExperience: "Organization experience not provided", // Placeholder if not available
+        });
       })
-      .catch(() => {
-        navigate("/user/login");
+      .catch((error) => {
+        console.error("Error fetching profile data:", error);
       });
   }, [navigate]);
 
+  const handleSaveBasicInfo = () => {
+    if (profile) {
+      // Implement saving logic here
+      setIsEditingBasic(false);
+    }
+  };
+
+  const handleSaveAboutMe = () => {
+    if (profile) {
+      // Implement saving logic here
+      setIsEditingAbout(false);
+    }
+  };
+
+  const handleChange = (
+    field: keyof Profile,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (profile) {
+      setProfile((prev) => ({
+        ...prev,
+        [field]: e.target.value,
+      }));
+    }
+  };
+
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <img
-            src="/Elon Musk.jpeg"
-            alt="Profile"
-            className="w-24 h-24 rounded-full"
-          />
-          <div>
-            <h1 className="text-2xl font-semibold">{profile.name}</h1>
-            <p className="text-gray-600">{profile.role}</p>
-          </div>
-        </div>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          onClick={() => setIsEditing(!isEditing)}
-        >
-          {isEditing ? "Save" : "Edit Info Dasar"}
-        </button>
-      </div>
-
-      <div className="mt-6">
-        {/* Info Dasar */}
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <h2 className="font-semibold text-lg">Info Dasar</h2>
-            <p>
-              WhatsApp:{" "}
-              {isEditing ? (
-                <input
-                  className="border"
-                  value={profile.whatsapp}
-                  name="whatsapp"
-                  onChange={(e) =>
-                    setProfile({ ...profile, whatsapp: e.target.value })
-                  }
-                />
-              ) : (
-                profile.whatsapp
-              )}
-            </p>
-            <p>
-              Email:{" "}
-              {isEditing ? (
-                <input
-                  className="border"
-                  value={profile.email}
-                  name="email"
-                  onChange={(e) =>
-                    setProfile({ ...profile, email: e.target.value })
-                  }
-                />
-              ) : (
-                profile.email
-              )}
-            </p>
-            <p>
-              Lokasi:{" "}
-              {isEditing ? (
-                <input
-                  className="border"
-                  value={profile.location}
-                  name="location"
-                  onChange={(e) =>
-                    setProfile({ ...profile, location: e.target.value })
-                  }
-                />
-              ) : (
-                profile.location
-              )}
-            </p>
-            <p>
-              Usia:{" "}
-              {isEditing ? (
-                <input
-                  className="border"
-                  value={profile.age}
-                  name="age"
-                  onChange={(e) =>
-                    setProfile({ ...profile, age: e.target.value })
-                  }
-                />
-              ) : (
-                profile.age
-              )}
-            </p>
-            <p>
-              Pendidikan Terakhir:{" "}
-              {isEditing ? (
-                <input
-                  className="border"
-                  value={profile.education}
-                  name="education"
-                  onChange={(e) =>
-                    setProfile({ ...profile, education: e.target.value })
-                  }
-                />
-              ) : (
-                profile.education
-              )}
-            </p>
-            <p>
-              Jenis Kelamin:{" "}
-              {isEditing ? (
-                <input
-                  className="border"
-                  value={profile.gender}
-                  name="gender"
-                  onChange={(e) =>
-                    setProfile({ ...profile, gender: e.target.value })
-                  }
-                />
-              ) : (
-                profile.gender
-              )}
-            </p>
-          </div>
-
-          {/* Tentang Saya */}
-          <div>
-            <h2 className="font-semibold text-lg">Tentang Saya</h2>
-            {isEditing ? (
-              <textarea
-                className="border w-full"
-                value={profile.about}
-                name="about"
-                onChange={(e) =>
-                  setProfile({ ...profile, about: e.target.value })
-                }
-              ></textarea>
-            ) : (
-              <p>{profile.about}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Additional Sections */}
-        <div className="mt-6">
-          <h2 className="font-semibold text-lg">Pengalaman Kerja</h2>
-          {isEditing ? (
-            <textarea
-              className="border w-full"
-              value={profile.workExperience}
-              name="workExperience"
-              onChange={(e) =>
-                setProfile({ ...profile, workExperience: e.target.value })
-              }
-            ></textarea>
-          ) : (
-            <p>{profile.workExperience}</p>
-          )}
-        </div>
-
-        <div className="mt-6">
-          <h2 className="font-semibold text-lg">Pendidikan</h2>
-          {isEditing ? (
-            <textarea
-              className="border w-full"
-              value={profile.educationDetails}
-              name="educationDetails"
-              onChange={(e) =>
-                setProfile({ ...profile, educationDetails: e.target.value })
-              }
-            ></textarea>
-          ) : (
-            <p>{profile.educationDetails}</p>
-          )}
-        </div>
-
-        <div className="mt-6">
-          <h2 className="font-semibold text-lg">Skill</h2>
-          {isEditing ? (
-            <textarea
-              className="border w-full"
-              value={profile.skills}
-              name="skills"
-              onChange={(e) =>
-                setProfile({ ...profile, skills: e.target.value })
-              }
-            ></textarea>
-          ) : (
-            <p>{profile.skills}</p>
-          )}
-        </div>
-
-        <div className="mt-6">
-          <h2 className="font-semibold text-lg">Minat Pekerjaan</h2>
-          {isEditing ? (
-            <textarea
-              className="border w-full"
-              value={profile.jobInterest}
-              name="jobInterest"
-              onChange={(e) =>
-                setProfile({ ...profile, jobInterest: e.target.value })
-              }
-            ></textarea>
-          ) : (
-            <p>{profile.jobInterest}</p>
-          )}
-        </div>
-
-        <div className="mt-6">
-          <h2 className="font-semibold text-lg">Link Sosial Media</h2>
-          {isEditing ? (
-            <div>
-              <input
-                className="border w-full"
-                value={profile.socialLinks.portfolio}
-                name="portfolio"
-                onChange={(e) =>
-                  setProfile({
-                    ...profile,
-                    socialLinks: {
-                      ...profile.socialLinks,
-                      portfolio: e.target.value,
-                    },
-                  })
-                }
-                placeholder="Portfolio Link"
-              />
-              <input
-                className="border w-full mt-2"
-                value={profile.socialLinks.linkedin}
-                name="linkedin"
-                onChange={(e) =>
-                  setProfile({
-                    ...profile,
-                    socialLinks: {
-                      ...profile.socialLinks,
-                      linkedin: e.target.value,
-                    },
-                  })
-                }
-                placeholder="LinkedIn Link"
-              />
-              <input
-                className="border w-full mt-2"
-                value={profile.socialLinks.github}
-                name="github"
-                onChange={(e) =>
-                  setProfile({
-                    ...profile,
-                    socialLinks: {
-                      ...profile.socialLinks,
-                      github: e.target.value,
-                    },
-                  })
-                }
-                placeholder="GitHub Link"
-              />
-              <input
-                className="border w-full mt-2"
-                value={profile.socialLinks.instagram}
-                name="instagram"
-                onChange={(e) =>
-                  setProfile({
-                    ...profile,
-                    socialLinks: {
-                      ...profile.socialLinks,
-                      instagram: e.target.value,
-                    },
-                  })
-                }
-                placeholder="Instagram Link"
-              />
+    <div className=" bg-white rounded-lg shadow-lg relative">
+      {profile ? (
+        <>
+          {/* Basic Info Section */}
+          <div className="p-6">
+            <h2 className="font-semibold text-xl mb-4 border-b pb-2 text-gray-800">
+              Info Dasar
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Basic Info Cards */}
+              {[
+                { label: "Nama", value: profile.name },
+                { label: "Phone Number", value: profile.whatsapp },
+                { label: "Lokasi", value: profile.location },
+                { label: "Pendidikan Terakhir", value: profile.education },
+                { label: "Email", value: profile.email },
+                { label: "Usia", value: profile.age },
+                { label: "Jenis Kelamin", value: profile.gender },
+                {
+                  label: "Keterangan Pengalaman Kerja",
+                  value: profile.experience,
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="bg-white p-4 rounded-lg shadow-sm border"
+                >
+                  <p className="font-medium text-gray-800">{item.label}</p>
+                  <p className="text-gray-600">{item.value}</p>
+                </div>
+              ))}
             </div>
-          ) : (
-            <ul>
-              <li>
-                Portfolio:{" "}
-                <a href={profile.socialLinks.portfolio}>
-                  {profile.socialLinks.portfolio}
-                </a>
-              </li>
-              <li>
-                LinkedIn:{" "}
-                <a href={profile.socialLinks.linkedin}>
-                  {profile.socialLinks.linkedin}
-                </a>
-              </li>
-              <li>
-                GitHub:{" "}
-                <a href={profile.socialLinks.github}>
-                  {profile.socialLinks.github}
-                </a>
-              </li>
-              <li>
-                Instagram:{" "}
-                <a href={profile.socialLinks.instagram}>
-                  {profile.socialLinks.instagram}
-                </a>
-              </li>
-            </ul>
+            <button
+              className="mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-150"
+              onClick={() => setIsEditingBasic(true)}
+            >
+              Edit Info Dasar
+            </button>
+          </div>
+
+          {/* About Me Section */}
+          <div className="mt-6">
+            <h2 className="font-semibold text-lg">Tentang Saya</h2>
+            <p>{profile.about}</p>
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mt-4"
+              onClick={() => setIsEditingAbout(true)}
+            >
+              Edit Tentang Saya
+            </button>
+          </div>
+
+          {/* Basic Info Edit Popup */}
+          {isEditingBasic && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2">
+                <h2 className="text-lg font-semibold mb-4">Edit Info Dasar</h2>
+                <div className="space-y-4">
+                  {/* Form Fields */}
+                  {[
+                    { label: "Nama", field: "name" },
+                    { label: "Phone Number", field: "whatsapp" },
+                    { label: "Lokasi", field: "location" },
+                    { label: "Pendidikan Terakhir", field: "education" },
+                    { label: "Email", field: "email" },
+                    { label: "Usia", field: "age" },
+                    { label: "Jenis Kelamin", field: "gender" },
+                    {
+                      label: "Keterangan Pengalaman Kerja",
+                      field: "experience",
+                    },
+                  ].map((field) => (
+                    <div key={field.label} className="flex flex-col">
+                      <label className="font-medium">{field.label}</label>
+                      <input
+                        type="text"
+                        value={profile[field.field as keyof Profile]}
+                        onChange={(e) =>
+                          handleChange(field.field as keyof Profile, e)
+                        }
+                        className="border p-2 rounded-lg"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex justify-end space-x-4">
+                  <button
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    onClick={handleSaveBasicInfo}
+                  >
+                    Simpan
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                    onClick={() => setIsEditingBasic(false)}
+                  >
+                    Batal
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
-        </div>
-      </div>
+
+          {/* About Me Edit Popup */}
+          {isEditingAbout && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2">
+                <h2 className="text-lg font-semibold mb-4">
+                  Edit Tentang Saya
+                </h2>
+                <textarea
+                  value={profile.about}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                    setProfile((prev) => ({ ...prev, about: e.target.value }))
+                  }
+                  className="border p-2 rounded-lg w-full h-40"
+                />
+                <div className="mt-4 flex justify-end space-x-4">
+                  <button
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    onClick={handleSaveAboutMe}
+                  >
+                    Simpan
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                    onClick={() => setIsEditingAbout(false)}
+                  >
+                    Batal
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <p>Loading profile data...</p>
+      )}
     </div>
   );
 }

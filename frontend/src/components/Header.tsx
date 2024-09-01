@@ -34,6 +34,7 @@ export default function Header() {
       .post("/auth/sign-out", {}) // Log out the user
       .then(() => {
         localStorage.removeItem("token"); // Remove token from localStorage
+        localStorage.removeItem("email");
         setIsLoggedIn(false); // Update login state
         navigate("/"); // Redirect to home page or login page
       })
