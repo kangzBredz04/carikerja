@@ -1,4 +1,75 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "../../utils";
+
 export default function RegisterFormEmploye() {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    agree: false,
+    role: "EMPLOYER",
+  });
+
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    agree: "",
+    role: "EMPLOYER",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Basic validation
+    let isValid = true;
+    const newErrors = {
+      email: "",
+      password: "",
+      agree: "",
+      role: "EMPLOYER",
+    };
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    }
+
+    if (!formData.agree) {
+      newErrors.agree = "You must agree to the terms";
+      isValid = false;
+    }
+
+    if (!isValid) {
+      setErrors(newErrors);
+      return;
+    }
+
+    api
+      .post("/auth/sign-up", formData)
+      .then(() => {
+        alert("Daftar akun berhasil!");
+        navigate("/employe/login");
+      })
+      .catch(() => {
+        alert("Email sudah terdaftar sebelumnya");
+      });
+  };
+
   return (
     <div className="flex min-h-screen bg-blue-100">
       {/* Left Side */}
@@ -47,7 +118,7 @@ export default function RegisterFormEmploye() {
         <div className="w-full max-w-md p-8 space-y-6">
           <h2 className="text-2xl font-bold text-gray-900">Selamat Datang!</h2>
           <p>Sebelum mulai, kami ingin lebih mengenal Anda</p>
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* <input
               type="text"
               name="name"
@@ -58,23 +129,35 @@ export default function RegisterFormEmploye() {
               type="email"
               name="email"
               placeholder="Masukkan email Anda"
+              value={formData.email}
+              onChange={handleChange}
               className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="+62 | Ketik nomor HP Anda"
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email}</p>
+            )}
+
             <input
               type="password"
               name="password"
               placeholder="Masukkan password baru"
+              value={formData.password}
+              onChange={handleChange}
               className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password}</p>
+            )}
 
             <div className="flex items-center">
-              <input type="checkbox" name="agree" id="agree" className="mr-2" />
+              <input
+                type="checkbox"
+                name="agree"
+                id="agree"
+                checked={formData.agree}
+                onChange={handleChange}
+                className="mr-2"
+              />
               <label htmlFor="agree" className="text-sm">
                 Dengan mendaftar, saya menyetujui{" "}
                 <a href="#" className="text-blue-600 underline">
@@ -86,10 +169,13 @@ export default function RegisterFormEmploye() {
                 </a>
               </label>
             </div>
+            {errors.agree && (
+              <p className="text-red-500 text-sm">{errors.agree}</p>
+            )}
 
             <button
               type="submit"
-              className="w-full  py-3 rounded-md bg-blue-600 hover:bg-blue-800 text-white"
+              className="w-full py-3 rounded-md bg-blue-600 hover:bg-blue-800 text-white"
             >
               Buat Akun
             </button>

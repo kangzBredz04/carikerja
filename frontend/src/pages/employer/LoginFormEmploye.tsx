@@ -1,4 +1,37 @@
+import { useState } from "react";
+import { api } from "../../utils";
+
+interface SignInResponse {
+  token: string;
+}
+
 export default function LoginFormEmploye() {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    api
+      .post<SignInResponse>(
+        `/auth/sign-in?email=${email}&password=${password}`,
+        {
+          email,
+          password,
+        }
+      )
+      .then((response) => {
+        location.reload();
+        alert("Login Berhasil");
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("email", email);
+        location.href = "/employe/dashboard";
+      })
+      .catch(() => {
+        alert("Email atau password salah");
+      });
+  };
   return (
     <div className="flex min-h-screen bg-blue-100">
       {/* Left Side */}
@@ -49,19 +82,31 @@ export default function LoginFormEmploye() {
             Selamat Datang Kembali!
           </h2>
           <p>Rekrut cepat, rekrut tepat</p>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <input
               type="email"
-              name="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Masukkan email Anda"
               className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <input
-              type="password"
-              name="password"
-              placeholder="Masukkan password"
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Masukkan password"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2 cursor-pointer text-gray-500"
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
 
             <div className="flex justify-between items-center">
               <div className="flex items-center">

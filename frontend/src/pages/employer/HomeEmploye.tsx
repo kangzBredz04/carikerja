@@ -1,4 +1,4 @@
-export default function Dashboard() {
+export default function HomeEmploye() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-white">
       {/* Section 1 */}

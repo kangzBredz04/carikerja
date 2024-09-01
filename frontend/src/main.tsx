@@ -12,11 +12,11 @@ import JobList from "./pages/job_seeker/JobList.tsx";
 import JobDetail from "./pages/job_seeker/JobDetail.tsx";
 import ProfilePage from "./pages/job_seeker/Profile.tsx";
 import Employe from "./pages/employer/Employe.tsx";
-import Dashboard from "./pages/employer/Dashboard.tsx";
 import RegisterFormEmploye from "./pages/employer/RegisterFormEmploye.tsx";
 import LoginFormEmploye from "./pages/employer/LoginFormEmploye.tsx";
 import ImageUpload from "./pages/ImageUpload.tsx";
 import CompanyDetail from "./pages/employer/CompanyDetail.tsx";
+import HomeEmploye from "./pages/employer/HomeEmploye.tsx";
 
 const router = createBrowserRouter([
   {
@@ -68,8 +68,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/employe/dashboard",
-        element: <Dashboard />,
+        path: "/employe",
+        element: <HomeEmploye />,
       },
       {
         path: "/employe/register",
