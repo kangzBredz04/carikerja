@@ -1,9 +1,10 @@
 import { Job } from "../types/Job";
 import { FaClock, FaCalendarAlt } from "react-icons/fa";
 import { IoLocationSharp } from "react-icons/io5";
+import { api } from "../utils";
 
 export default function JobCardDashboard({ job }: { job: Job }) {
-  const { jobTitle, jobType, location, createdAt, applicants } = job;
+  const { jobTitle, jobType, location, createdAt, applicants, id } = job;
 
   return (
     <div className="bg-white shadow-md flex flex-col gap-2 rounded-lg p-4 border border-gray-200">
@@ -44,7 +45,17 @@ export default function JobCardDashboard({ job }: { job: Job }) {
         <button className="bg-yellow-500 text-white py-1 w-1/4 rounded hover:bg-yellow-600">
           Edit
         </button>
-        <button className="bg-red-500 text-white py-1 w-1/4 rounded hover:bg-red-600">
+        <button
+          onClick={() => {
+            if (confirm("Apakah anda yakin akan menghapus data loker ini?")) {
+              api.delete(`/jobs/${id}`).then(() => {
+                window.location.reload();
+                alert("Berhasil dihapus");
+              });
+            }
+          }}
+          className="bg-red-500 text-white py-1 w-1/4 rounded hover:bg-red-600"
+        >
           Hapus
         </button>
       </div>
