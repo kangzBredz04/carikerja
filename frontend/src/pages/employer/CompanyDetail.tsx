@@ -16,6 +16,7 @@ interface Company {
   id: number;
   user_id: number;
   logoImage: string;
+  bannerImage: string; // New field for banner image
   companyName: string;
   slogan: string;
   address: string;
@@ -91,7 +92,7 @@ export default function CompanyDetail() {
     }
   }, [id, navigate]);
 
-  const filterJob = jobs.filter((job) => job.employer.id === company?.id);
+  const filterJob = jobs.filter((job) => job.employer?.id === company?.id);
 
   if (!company) {
     return <p>Loading...</p>; // Show a loading state until company data is fetched
@@ -103,25 +104,34 @@ export default function CompanyDetail() {
 
   return (
     <div className="mx-auto h-full bg-white shadow-lg rounded-lg p-6">
-      {/* Company Info Header */}
-      <div className="flex items-center">
-        {/* Company Logo */}
+      {/* Company Banner */}
+      <div className="relative">
         <img
-          src={company.logoImage}
-          alt={`${company.companyName} logo`}
-          className="w-20 h-20 rounded-full border-2 border-gray-200"
+          src={company.bannerImage}
+          alt={`${company.companyName} banner`}
+          className="w-full h-48 object-cover rounded-lg shadow-md"
         />
 
-        {/* Company Name and Description */}
-        <div className="ml-4">
-          <h1 className="text-3xl font-bold text-gray-800 flex items-center">
-            {company.companyName}
-            <span className="ml-2 text-yellow-500" title="Verified">
-              ✔️
-            </span>
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">{company.slogan}</p>
+        {/* Company Logo positioned above the banner */}
+        <div className="absolute bottom-0 left-4 transform translate-y-1/2">
+          {/* Company Logo */}
+          <img
+            src={company.logoImage}
+            alt={`${company.companyName} logo`}
+            className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
+          />
         </div>
+      </div>
+
+      {/* Company Name and Slogan outside the banner */}
+      <div className="mt-16 px-4 text-gray-800">
+        <h1 className="text-3xl font-bold flex items-center">
+          {company.companyName}
+          <span className="ml-2 text-yellow-500" title="Verified">
+            ✔️
+          </span>
+        </h1>
+        <p className="text-sm">{company.slogan}</p>
       </div>
 
       {/* Company Details */}
