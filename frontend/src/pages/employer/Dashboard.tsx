@@ -13,18 +13,21 @@ export default function Dashboard() {
         Daftar Lowongan Kerja
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-        {jobs
-          ?.filter((job) => job.employer?.id == employeId)
-          ?.map((job: Job) => (
-            <JobCardDashboard key={job.id} job={job} />
-          ))}
-      </div>
-      <div className="flex justify-center items-center min-h-[200px] mt-8">
-        <h1 className="text-xl font-semibold text-gray-600">
-          Anda telah mencapai batas maksimal
-        </h1>
-      </div>
+      {jobs?.filter((job) => job.employer?.id == employeId).length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          {jobs
+            ?.filter((job) => job.employer?.id == employeId)
+            ?.map((job: Job) => (
+              <JobCardDashboard key={job.id} job={job} />
+            ))}
+        </div>
+      ) : (
+        <div className="flex justify-center items-center min-h-[200px]">
+          <h1 className="text-xl font-semibold text-gray-600">
+            Perusahaan belum membuka lowongan pekerjaan
+          </h1>
+        </div>
+      )}
     </div>
   );
 }

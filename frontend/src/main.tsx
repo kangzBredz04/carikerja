@@ -22,6 +22,7 @@ import Dashboard from "./pages/employer/Dashboard.tsx";
 import BiayaFaqPage from "./pages/employer/BiayaFaqPage.tsx";
 import BlogPage from "./pages/employer/BlogPage.tsx";
 import AddJob from "./pages/employer/AddJob.tsx";
+import CandidatePage from "./pages/employer/CandidatePage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -91,6 +92,10 @@ const router = createBrowserRouter([
       {
         path: "/employe/add-job",
         element: <AddJob />,
+      },
+      {
+        path: "/employe/candidate",
+        element: <CandidatePage />,
       },
       {
         path: "/employe/register",

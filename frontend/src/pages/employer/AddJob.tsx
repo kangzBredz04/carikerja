@@ -93,8 +93,12 @@ export default function TambahJob() {
         window.location.href = "/employe/dashboard"; // Arahkan ke dashboard setelah update
       } else {
         // Lakukan tambah data jika formData.id tidak ada
-        await api.post("/jobs", formData);
-        alert("Data lowongan kerja berhasil ditambah");
+        console.log("masuk");
+
+        await api
+          .post("/jobs", formData)
+          .then(() => alert("Data lowongan kerja berhasil ditambah"))
+          .catch((err) => console.log(err));
         window.location.href = "/employe/dashboard"; // Arahkan ke dashboard setelah tambah
       }
 
