@@ -37,8 +37,8 @@ export default function RegisterForm() {
         alert("Daftar akun berhasil!"); // menampilkan alert saat berhasil
         navigate("/user/login");
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        alert("Email sudah terdaftar sebelumnya");
       });
   };
 

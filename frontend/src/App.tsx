@@ -4,19 +4,33 @@ import Footer from "./components/Footer";
 import { createContext, useEffect, useState } from "react";
 import { api } from "./utils";
 
-export const AllContext = createContext();
+// Define a type for the context
+interface AllContextType {
+  userId: number | null;
+}
+
+// Provide a default value
+const defaultContextValue: AllContextType = {
+  userId: null,
+};
+
+// Create the context with the correct type
+export const AllContext = createContext<AllContextType>(defaultContextValue);
 
 function App() {
   const [userId, setUserId] = useState(0);
+
   useEffect(() => {
     api.get("/job-seekers").then((response) => {
-      console.log(response);
-      const data = response?.filter(
-        (res) => res.email == localStorage.getItem("email")
+      const data = response.filter(
+        (res) => res.user.email == localStorage.getItem("email")
       );
-      setUserId(data[0]?.id);
+      if (data && data.length > 0) {
+        setUserId(data[0].id);
+      }
     });
   }, [userId]);
+
   return (
     <AllContext.Provider
       value={{

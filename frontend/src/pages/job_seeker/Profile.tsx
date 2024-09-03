@@ -34,47 +34,59 @@ function ProfilePage() {
   const [isEditingBasic, setIsEditingBasic] = useState(false);
   const [isEditingAbout, setIsEditingAbout] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const { userId } = useContext(AllContext);
+  const { userId } = useContext(AllContext) as unknown as { userId: string };
 
   useEffect(() => {
     api
       .get(`/job-seekers/${userId}`) // Replace with your API endpoint
       .then((response) => {
-        console.log(response);
+        console.log(userId);
+        const data = response as {
+          name: string;
+          role: string;
+          phoneNumber: string;
+          email: string;
+          location: string;
+          age: string;
+          hasWorkExperience: boolean;
+          gender: string;
+          aboutMe: string;
+          portfolioLink: string;
+          linkedinLink: string;
+          githubLink: string;
+        };
         setProfile({
-          name: response.name,
-          role: response.role,
-          whatsapp: response.phoneNumber,
-          email: response.email,
-          location: response.location,
-          age: response.age,
-          education: response.hasWorkExperience
-            ? "Experience"
-            : "No Experience",
-          gender: response.gender === "male" ? "Laki-laki" : "Perempuan",
-          experience: response.hasWorkExperience
+          name: data.name,
+          role: data.role,
+          whatsapp: data.phoneNumber,
+          email: data.email,
+          location: data.location,
+          age: data.age,
+          education: data.hasWorkExperience ? "Experience" : "No Experience",
+          gender: data.gender === "male" ? "Laki-laki" : "Perempuan",
+          experience: data.hasWorkExperience
             ? "Has experience"
             : "No experience",
-          about: response.aboutMe,
-          workExperience: response.hasWorkExperience
+          about: data.aboutMe,
+          workExperience: data.hasWorkExperience
             ? "Has work experience"
             : "No work experience",
-          educationDetails: "Details not provided", // Placeholder if not available
-          skills: "Skills not provided", // Placeholder if not available
-          jobInterest: "Job interest not provided", // Placeholder if not available
+          educationDetails: "Details not provided",
+          skills: "Skills not provided",
+          jobInterest: "Job interest not provided",
           socialLinks: {
-            portfolio: response.portfolioLink,
-            linkedin: response.linkedinLink || "",
-            github: response.githubLink,
-            instagram: "", // Placeholder if not available
+            portfolio: data.portfolioLink,
+            linkedin: data.linkedinLink || "",
+            github: data.githubLink,
+            instagram: "",
           },
-          organizationExperience: "Organization experience not provided", // Placeholder if not available
+          organizationExperience: "Organization experience not provided",
         });
       })
       .catch((error) => {
         console.error("Error fetching profile data:", error);
       });
-  }, [navigate]);
+  }, [navigate, userId]);
 
   const handleSaveBasicInfo = () => {
     if (profile) {
@@ -95,10 +107,12 @@ function ProfilePage() {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     if (profile) {
-      setProfile((prev) => ({
-        ...prev,
-        [field]: e.target.value,
-      }));
+      setProfile((prev) => {
+        if (prev) {
+          return { ...prev, [field]: e.target.value };
+        }
+        return prev;
+      });
     }
   };
 
@@ -160,43 +174,51 @@ function ProfilePage() {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2">
                 <h2 className="text-lg font-semibold mb-4">Edit Info Dasar</h2>
+
                 <div className="space-y-4">
-                  {/* Form Fields */}
-                  {[
-                    { label: "Nama", field: "name" },
-                    { label: "Phone Number", field: "whatsapp" },
-                    { label: "Lokasi", field: "location" },
-                    { label: "Pendidikan Terakhir", field: "education" },
-                    { label: "Email", field: "email" },
-                    { label: "Usia", field: "age" },
-                    { label: "Jenis Kelamin", field: "gender" },
-                    {
-                      label: "Keterangan Pengalaman Kerja",
-                      field: "experience",
-                    },
-                  ].map((field) => (
-                    <div key={field.label} className="flex flex-col">
-                      <label className="font-medium">{field.label}</label>
-                      <input
-                        type="text"
-                        value={profile[field.field as keyof Profile]}
-                        onChange={(e) =>
-                          handleChange(field.field as keyof Profile, e)
-                        }
-                        className="border p-2 rounded-lg"
-                      />
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                      { label: "Nama", field: "name" },
+                      { label: "Phone Number", field: "whatsapp" },
+                      { label: "Lokasi", field: "location" },
+                      { label: "Pendidikan Terakhir", field: "education" },
+                      { label: "Email", field: "email" },
+                      { label: "Usia", field: "age" },
+                      { label: "Jenis Kelamin", field: "gender" },
+                      {
+                        label: "Keterangan Pengalaman Kerja",
+                        field: "experience",
+                      },
+                    ].map((field) => (
+                      <div key={field.label} className="flex flex-col">
+                        <label className="font-medium mb-1">
+                          {field.label}
+                        </label>
+                        <input
+                          type="text"
+                          value={
+                            (profile[field.field as keyof Profile] as string) ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleChange(field.field as keyof Profile, e)
+                          }
+                          className="border p-2 rounded-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="mt-4 flex justify-end space-x-4">
+
+                <div className="mt-6 flex justify-end space-x-4">
                   <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
                     onClick={handleSaveBasicInfo}
                   >
                     Simpan
                   </button>
                   <button
-                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all"
                     onClick={() => setIsEditingBasic(false)}
                   >
                     Batal
@@ -214,12 +236,16 @@ function ProfilePage() {
                   Edit Tentang Saya
                 </h2>
                 <textarea
-                  value={profile.about}
+                  value={profile.about || ""} // Ensure value is a string
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                    setProfile((prev) => ({ ...prev, about: e.target.value }))
+                    setProfile(
+                      (prev) =>
+                        prev ? { ...prev, about: e.target.value } : null // Ensure prev is not null
+                    )
                   }
                   className="border p-2 rounded-lg w-full h-40"
                 />
+
                 <div className="mt-4 flex justify-end space-x-4">
                   <button
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
