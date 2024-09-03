@@ -146,7 +146,7 @@ export default function CompanyDetail() {
         </div>
         <div>
           <p>
-            <span className="font-medium">👥 Company Size:</span>{" "}
+            <span className="font-medium">👥 Company Size:</span>
             {company.companySize.charAt(0).toUpperCase() +
               company.companySize.slice(1)}
           </p>
