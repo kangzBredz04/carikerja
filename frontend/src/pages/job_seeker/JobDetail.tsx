@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { FaBookmark, FaShareAlt, FaRocket } from "react-icons/fa";
+import { AllContext } from "../../App";
 
 interface Job {
   id: number;
@@ -44,15 +45,20 @@ interface Job {
 }
 
 export default function JobDetail() {
+  const { userId } = useContext(AllContext) as unknown as { userId: string };
   const { id } = useParams<{ id: string }>();
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [applicationStatus, setApplicationStatus] = useState<string | null>(
+    null
+  );
+  const [isApplied, setIsApplied] = useState<boolean>(false); // New state to track if the job has been applied
 
   useEffect(() => {
     const fetchJobDetail = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/jobs/${id}`); // Replace with your API endpoint
+        const response = await fetch(`http://localhost:8080/api/jobs/${id}`);
         setJob(await response.json());
       } catch (error) {
         setError(error as string);
@@ -61,8 +67,55 @@ export default function JobDetail() {
       }
     };
 
+    const checkIfApplied = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/applications/jobseeker/${userId}/job/${id}`
+        );
+
+        const data = await response.json();
+        console.log(data);
+        if (data) {
+          setIsApplied(true); // Job already applied
+        }
+      } catch (error) {
+        console.error("Error checking application status:", error);
+      }
+    };
+
     fetchJobDetail();
-  }, [id]);
+    checkIfApplied(); // Check if the job has been applied
+  }, [id, userId]);
+
+  const handleApplyFast = async () => {
+    if (!job) return;
+
+    const applicationData = {
+      job: { id: job.id },
+      jobSeeker: { id: userId },
+      status: "Dilamar",
+      appliedAt: new Date().toISOString(),
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(applicationData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to apply");
+      }
+
+      setApplicationStatus("Application submitted successfully!");
+      setIsApplied(true); // Set the job as applied after success
+    } catch (error) {
+      setApplicationStatus(`Error: ${error}`);
+    }
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -71,7 +124,6 @@ export default function JobDetail() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="mx-auto bg-white p-8 rounded-lg shadow-lg">
-        {/* Job Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
             <h1 className="text-2xl font-bold mb-2">{job.jobTitle}</h1>
@@ -85,11 +137,18 @@ export default function JobDetail() {
             <p className="text-gray-600">{job.location}</p>
           </div>
           <div>
-            {/* Action Buttons */}
             <div className="flex flex-col gap-5">
-              <button className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700">
+              <button
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg shadow-lg ${
+                  isApplied
+                    ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
+                onClick={handleApplyFast}
+                disabled={isApplied} // Disable button if applied
+              >
                 <FaRocket />
-                Apply Fast
+                {isApplied ? "Sudah Dilamar" : "Apply Fast"}
               </button>
               <div className="flex gap-4">
                 <button className="flex items-center gap-2 px-6 py-2 bg-gray-100 text-gray-600 rounded-lg shadow-lg hover:bg-gray-200">
@@ -102,10 +161,13 @@ export default function JobDetail() {
                 </button>
               </div>
             </div>
+            {applicationStatus && (
+              <p className="mt-4 text-gray-600">{applicationStatus}</p>
+            )}
           </div>
         </div>
 
-        {/* Job Description */}
+        {/* Job Details and Description */}
         <div className="mb-4">
           <h2 className="text-lg font-semibold">Job Description</h2>
           <p className="text-gray-700">{job.jobDescription}</p>

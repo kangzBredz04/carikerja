@@ -35,10 +35,20 @@ public class JobSeekerController {
         JobSeeker jobSeeker = jobSeekerRepository.findById(id).orElse(null);
         if (jobSeeker != null) {
             jobSeeker.setName(updatedJobSeeker.getName());
-            jobSeeker.setEmail(updatedJobSeeker.getEmail());
+            jobSeeker.setBirthDate(updatedJobSeeker.getBirthDate());
             jobSeeker.setPhoneNumber(updatedJobSeeker.getPhoneNumber());
+            jobSeeker.setEmail(updatedJobSeeker.getEmail());
             jobSeeker.setLocation(updatedJobSeeker.getLocation());
-            // Update other fields as necessary
+            jobSeeker.setAge(updatedJobSeeker.getAge());
+            jobSeeker.setGender(updatedJobSeeker.getGender());
+            jobSeeker.setAboutMe(updatedJobSeeker.getAboutMe());
+            jobSeeker.setHasWorkExperience(updatedJobSeeker.getHasWorkExperience());
+            jobSeeker.setResume(updatedJobSeeker.getResume());
+            jobSeeker.setPortfolioLink(updatedJobSeeker.getPortfolioLink());
+            jobSeeker.setGithubLink(updatedJobSeeker.getGithubLink());
+            jobSeeker.setWillingToWorkRemotely(updatedJobSeeker.getWillingToWorkRemotely());
+
+            System.out.println(updatedJobSeeker);
             return jobSeekerRepository.save(jobSeeker);
         }
         return null;

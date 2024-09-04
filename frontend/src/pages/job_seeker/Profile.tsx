@@ -4,29 +4,28 @@ import { api } from "../../utils";
 import { AllContext } from "../../App";
 
 interface SocialLinks {
-  portfolio: string;
-  linkedin: string;
-  github: string;
-  instagram: string;
+  portfolio_link: string;
+  linkedin_link: string;
+  github_link: string;
 }
 
 interface Profile {
+  id: number; // sesuai dengan primary key di tabel
+  user_id: number; // relasi ke tabel users
   name: string;
-  role: string;
-  whatsapp: string;
+  birth_date: string; // Tanggal lahir
+  phone_number: string; // Nomor WhatsApp
   email: string;
   location: string;
-  age: string;
-  education: string;
-  gender: string;
-  experience: string;
-  about: string;
-  workExperience: string;
-  educationDetails: string;
-  skills: string;
-  jobInterest: string;
-  socialLinks: SocialLinks;
-  organizationExperience: string;
+  age: string; // Sesuai dengan tabel
+  gender: "Laki-laki" | "Perempuan"; // Hanya dua opsi sesuai catatan di tabel
+  about_me: string; // Tentang diri
+  has_work_experience: string; // Apakah memiliki pengalaman kerja
+  resume: string; // Link ke CV
+  portfolio_link: string; // Link ke portofolio
+  github_link: string; // Link ke GitHub
+  willing_to_work_remotely: boolean; // Bersedia kerja remote
+  socialLinks: SocialLinks; // Menghubungkan ke social media links
 }
 
 function ProfilePage() {
@@ -35,52 +34,44 @@ function ProfilePage() {
   const [isEditingAbout, setIsEditingAbout] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const { userId } = useContext(AllContext) as unknown as { userId: string };
-
   useEffect(() => {
     api
-      .get(`/job-seekers/${userId}`) // Replace with your API endpoint
+      .get(`/job-seekers/${userId}`) // Pastikan endpoint API sesuai
       .then((response) => {
-        console.log(userId);
         const data = response as {
           name: string;
-          role: string;
+          birthDate: string;
           phoneNumber: string;
           email: string;
           location: string;
-          age: string;
-          hasWorkExperience: boolean;
+          age: number;
           gender: string;
           aboutMe: string;
+          hasWorkExperience: boolean;
+          resume: string;
           portfolioLink: string;
-          linkedinLink: string;
           githubLink: string;
+          willingToWorkRemotely: boolean;
         };
+
         setProfile({
           name: data.name,
-          role: data.role,
-          whatsapp: data.phoneNumber,
+          birth_date: data.birthDate,
+          phone_number: data.phoneNumber,
           email: data.email,
           location: data.location,
-          age: data.age,
-          education: data.hasWorkExperience ? "Experience" : "No Experience",
+          age: data.age.toString(),
           gender: data.gender === "male" ? "Laki-laki" : "Perempuan",
-          experience: data.hasWorkExperience
-            ? "Has experience"
-            : "No experience",
-          about: data.aboutMe,
-          workExperience: data.hasWorkExperience
-            ? "Has work experience"
-            : "No work experience",
-          educationDetails: "Details not provided",
-          skills: "Skills not provided",
-          jobInterest: "Job interest not provided",
-          socialLinks: {
-            portfolio: data.portfolioLink,
-            linkedin: data.linkedinLink || "",
-            github: data.githubLink,
-            instagram: "",
-          },
-          organizationExperience: "Organization experience not provided",
+          about_me: data.aboutMe,
+          has_work_experience: data.hasWorkExperience
+            ? "Memiliki pengalaman kerja"
+            : "Tidak memiliki pengalaman kerja",
+          resume: data.resume || "Belum diisi",
+          portfolio_link: data.portfolioLink || "Belum diisi",
+          github_link: data.githubLink || "Belum diisi",
+          willing_to_work_remotely: data.willingToWorkRemotely
+            ? "Bersedia"
+            : "Tidak bersedia",
         });
       })
       .catch((error) => {
@@ -88,10 +79,14 @@ function ProfilePage() {
       });
   }, [navigate, userId]);
 
-  const handleSaveBasicInfo = () => {
-    if (profile) {
-      // Implement saving logic here
-      setIsEditingBasic(false);
+  const handleSaveBasicInfo = async () => {
+    try {
+      api.put(`/job-seekers/${userId}`, profile).then(() => {
+        alert("Data berhasil di update");
+        setIsEditingBasic(false);
+      });
+    } catch (error) {
+      console.error("Failed to update profile", error);
     }
   };
 
@@ -128,24 +123,29 @@ function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Basic Info Cards */}
               {[
-                { label: "Nama", value: profile.name },
-                { label: "Phone Number", value: profile.whatsapp },
-                { label: "Lokasi", value: profile.location },
-                { label: "Pendidikan Terakhir", value: profile.education },
-                { label: "Email", value: profile.email },
-                { label: "Usia", value: profile.age },
-                { label: "Jenis Kelamin", value: profile.gender },
+                { label: "Nama", field: "name" },
+                { label: "Tanggal Lahir", field: "birth_date" },
+                { label: "Nomor Telepon", field: "phone_number" },
+                { label: "Email", field: "email" },
+                { label: "Lokasi", field: "location" },
+                { label: "Usia", field: "age" },
+                { label: "Jenis Kelamin", field: "gender" },
+                { label: "Tentang Saya", field: "about_me" },
+                { label: "Pengalaman Kerja", field: "has_work_experience" },
+                { label: "Resume (CV)", field: "resume" },
+                { label: "Portofolio", field: "portfolio_link" },
+                { label: "GitHub", field: "github_link" },
                 {
-                  label: "Keterangan Pengalaman Kerja",
-                  value: profile.experience,
+                  label: "Bersedia Kerja Remote",
+                  field: "willing_to_work_remotely",
                 },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="bg-white p-4 rounded-lg shadow-sm border"
-                >
-                  <p className="font-medium text-gray-800">{item.label}</p>
-                  <p className="text-gray-600">{item.value}</p>
+              ].map((field) => (
+                <div key={field.label} className="flex flex-col">
+                  <label className="font-medium mb-1">{field.label}</label>
+                  <p className="border p-2 rounded-lg">
+                    {(profile[field.field as keyof Profile] as string) ||
+                      "Belum diisi"}
+                  </p>
                 </div>
               ))}
             </div>
@@ -169,25 +169,55 @@ function ProfilePage() {
             </button>
           </div>
 
-          {/* Basic Info Edit Popup */}
           {isEditingBasic && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2 max-h-[90vh] overflow-y-auto">
                 <h2 className="text-lg font-semibold mb-4">Edit Info Dasar</h2>
 
-                <div className="space-y-4">
+                <form
+                  className="space-y-4"
+                  onSubmit={(e) => {
+                    e.preventDefault(); // Mencegah reload halaman
+                    handleSaveBasicInfo(); // Panggil fungsi simpan
+                  }}
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      { label: "Nama", field: "name" },
-                      { label: "Phone Number", field: "whatsapp" },
-                      { label: "Lokasi", field: "location" },
-                      { label: "Pendidikan Terakhir", field: "education" },
-                      { label: "Email", field: "email" },
-                      { label: "Usia", field: "age" },
-                      { label: "Jenis Kelamin", field: "gender" },
                       {
-                        label: "Keterangan Pengalaman Kerja",
-                        field: "experience",
+                        label: "Nama",
+                        field: "name",
+                        type: "text",
+                        placeholder: "Masukkan nama",
+                      },
+                      {
+                        label: "Nomor Telepon",
+                        field: "phone_number",
+                        type: "text",
+                        placeholder: "Masukkan nomor telepon",
+                      },
+                      {
+                        label: "Lokasi",
+                        field: "location",
+                        type: "text",
+                        placeholder: "Masukkan lokasi",
+                      },
+                      {
+                        label: "Email",
+                        field: "email",
+                        type: "text",
+                        placeholder: "Masukkan email",
+                      },
+                      {
+                        label: "Tanggal Lahir",
+                        field: "birth_date",
+                        type: "date",
+                        placeholder: "Pilih tanggal lahir",
+                      },
+                      {
+                        label: "Usia",
+                        field: "age",
+                        type: "number",
+                        placeholder: "Masukkan usia",
                       },
                     ].map((field) => (
                       <div key={field.label} className="flex flex-col">
@@ -195,7 +225,8 @@ function ProfilePage() {
                           {field.label}
                         </label>
                         <input
-                          type="text"
+                          type={field.type}
+                          placeholder={field.placeholder}
                           value={
                             (profile[field.field as keyof Profile] as string) ||
                             ""
@@ -207,23 +238,108 @@ function ProfilePage() {
                         />
                       </div>
                     ))}
-                  </div>
-                </div>
 
-                <div className="mt-6 flex justify-end space-x-4">
-                  <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
-                    onClick={handleSaveBasicInfo}
-                  >
-                    Simpan
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all"
-                    onClick={() => setIsEditingBasic(false)}
-                  >
-                    Batal
-                  </button>
-                </div>
+                    {/* Jenis Kelamin */}
+                    <div className="flex flex-col">
+                      <label className="font-medium mb-1">Jenis Kelamin</label>
+                      <select
+                        value={profile.gender || ""}
+                        onChange={(e) => handleChange("gender", e)}
+                        className="border p-2 rounded-lg"
+                      >
+                        <option value="">Pilih jenis kelamin</option>
+                        <option value="male">Laki-laki</option>
+                        <option value="female">Perempuan</option>
+                      </select>
+                    </div>
+
+                    {/* Pengalaman Kerja */}
+                    <div className="flex flex-col">
+                      <label className="font-medium mb-1">
+                        Pengalaman Kerja
+                      </label>
+                      <select
+                        value={profile.has_work_experience ? "yes" : "no"}
+                        onChange={(e) => handleChange("has_work_experience", e)}
+                        className="border p-2 rounded-lg"
+                      >
+                        <option value="no">Tidak ada</option>
+                        <option value="yes">Ada</option>
+                      </select>
+                    </div>
+
+                    {/* Resume */}
+                    <div className="flex flex-col">
+                      <label className="font-medium mb-1">
+                        Resume (CV) Link
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Masukkan link resume"
+                        value={profile.resume || ""}
+                        onChange={(e) => handleChange("resume", e)}
+                        className="border p-2 rounded-lg"
+                      />
+                    </div>
+
+                    {/* Portfolio Link */}
+                    <div className="flex flex-col">
+                      <label className="font-medium mb-1">Portfolio Link</label>
+                      <input
+                        type="text"
+                        placeholder="Masukkan link portfolio"
+                        value={profile.portfolio_link || ""}
+                        onChange={(e) => handleChange("portfolio_link", e)}
+                        className="border p-2 rounded-lg"
+                      />
+                    </div>
+
+                    {/* GitHub Link */}
+                    <div className="flex flex-col">
+                      <label className="font-medium mb-1">GitHub Link</label>
+                      <input
+                        type="text"
+                        placeholder="Masukkan link GitHub"
+                        value={profile.github_link || ""}
+                        onChange={(e) => handleChange("github_link", e)}
+                        className="border p-2 rounded-lg"
+                      />
+                    </div>
+
+                    {/* Bersedia Bekerja Remote */}
+                    <div className="flex flex-col">
+                      <label className="font-medium mb-1">
+                        Bersedia Bekerja Remote
+                      </label>
+                      <select
+                        value={profile.willing_to_work_remotely ? "yes" : "no"}
+                        onChange={(e) =>
+                          handleChange("willing_to_work_remotely", e)
+                        }
+                        className="border p-2 rounded-lg"
+                      >
+                        <option value="no">Tidak</option>
+                        <option value="yes">Ya</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end space-x-4">
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+                    >
+                      Simpan
+                    </button>
+                    <button
+                      type="button"
+                      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all"
+                      onClick={() => setIsEditingBasic(false)}
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}

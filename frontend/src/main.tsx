@@ -23,6 +23,7 @@ import BiayaFaqPage from "./pages/employer/BiayaFaqPage.tsx";
 import BlogPage from "./pages/employer/BlogPage.tsx";
 import AddJob from "./pages/employer/AddJob.tsx";
 import CandidatePage from "./pages/employer/CandidatePage.tsx";
+import ApplicationsPage from "./pages/job_seeker/ApplicationsPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "/user/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/user/applications",
+        element: <ApplicationsPage />,
       },
       {
         path: "/job-list",

@@ -99,7 +99,7 @@ export default function Header() {
                       Profil Saya
                     </Link>
                     <Link
-                      to="/applications"
+                      to="/user/applications"
                       className="block px-4 py-2 hover:bg-gray-100"
                     >
                       Lamaran Saya

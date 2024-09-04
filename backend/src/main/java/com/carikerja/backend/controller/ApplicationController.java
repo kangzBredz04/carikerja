@@ -44,4 +44,17 @@ public class ApplicationController {
     public void deleteApplication(@PathVariable Long id) {
         applicationRepository.deleteById(id);
     }
+
+    @GetMapping("/jobseeker/{jobSeekerId}")
+    public List<Application> getApplicationsByJobSeekerId(@PathVariable Long jobSeekerId) {
+        return applicationRepository.findByJobSeekerId(jobSeekerId);
+    }
+
+    @GetMapping("/jobseeker/{jobSeekerId}/job/{jobId}")
+    public Application getApplicationByJobSeekerAndJob(
+            @PathVariable Long jobSeekerId,
+            @PathVariable Long jobId) {
+        return applicationRepository.findApplicationByJobSeekerIdAndJobId(jobSeekerId, jobId)
+                .orElse(null); // Return null if not found
+    }
 }
