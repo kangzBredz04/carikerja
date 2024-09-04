@@ -7,10 +7,11 @@ interface Application {
   id: number;
   title: string;
   company: string;
-  date: string;
+  date: string; // You could rename this to appliedAt to match your model
   status: string;
   jobSeekerId: number; // Include jobSeekerId to filter by userId
   imageUrl: string; // URL for the image
+  appliedAt: string; // Ensure this field is properly used as date
 }
 
 const ApplicationsPage: React.FC = () => {
@@ -26,7 +27,7 @@ const ApplicationsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const tabs = [
-    "All",
+    "Semua",
     "Dilamar",
     "Sedang Komunikasi",
     "Wawancara & Tes",
@@ -37,16 +38,14 @@ const ApplicationsPage: React.FC = () => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/applications"); // Fetch all applications
+        const response = await fetch("http://localhost:8080/api/applications");
         if (!response.ok) {
           throw new Error("Failed to fetch applications");
         }
         const data = await response.json();
-        console.log(data);
-
         setApplications(data);
         setLoading(false);
-        filterApplications(data); // Filter applications based on userId
+        filterApplications(data);
       } catch (err) {
         setError(err as string);
         setLoading(false);
@@ -57,7 +56,7 @@ const ApplicationsPage: React.FC = () => {
   }, [userId]);
 
   useEffect(() => {
-    filterApplications(applications); // Re-filter applications when activeTab changes
+    filterApplications(applications);
   }, [applications, activeTab]);
 
   const filterApplications = (apps: Application[]) => {
@@ -79,12 +78,12 @@ const ApplicationsPage: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  // Sort applications
+  // Sort applications based on appliedAt date
   const sortedApplications = [...filteredApplications].sort((a, b) => {
     if (sortOrder === "latest") {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
+      return new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime();
     } else {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+      return new Date(a.appliedAt).getTime() - new Date(b.appliedAt).getTime();
     }
   });
 
@@ -107,7 +106,7 @@ const ApplicationsPage: React.FC = () => {
               key={index}
               onClick={() => {
                 setActiveTab(index);
-                setCurrentPage(1); // Reset to first page on tab change
+                setCurrentPage(1);
               }}
               className={`p-2 cursor-pointer ${
                 activeTab === index ? "bg-blue-500 text-white" : "bg-white"
@@ -138,27 +137,36 @@ const ApplicationsPage: React.FC = () => {
         </div>
 
         {/* Applications List */}
-        {paginatedApplications.map((app) => (
-          <div
-            key={app.id}
-            className="border p-4 rounded mb-4 flex items-center"
-          >
-            <img
-              src={app.job.employer.logoImage}
-              alt={app.job.jobTitle}
-              className="w-16 h-16 object-cover rounded mr-4"
-            />
-            <div>
-              <h3 className="font-bold text-xl">{app.job.jobTitle}</h3>
-              <p className="text-gray-700">{app.company}</p>
-              <div className="flex items-center text-gray-500">
-                <FaCalendarAlt className="mr-2" />
-                <p>{format(new Date(app.appliedAt), "EEEE, dd MMMM yyyy")}</p>
+        {paginatedApplications.length > 0 ? (
+          paginatedApplications.map((app) => (
+            <div
+              key={app.id}
+              className="border p-4 rounded mb-4 flex items-center"
+            >
+              <img
+                src={
+                  app.job.employer?.logoImage ||
+                  "https://cas-asbestos.co.uk/wp-content/uploads/2014/06/dummy-logo.png"
+                }
+                alt={app.title}
+                className="w-16 h-16 object-cover rounded mr-4"
+              />
+              <div>
+                <h3 className="font-bold text-xl">{app.job.jobTitle}</h3>
+                <p className="text-gray-700">{app.company}</p>
+                <div className="flex items-center text-gray-500">
+                  <FaCalendarAlt className="mr-2" />
+                  <p>{format(new Date(app.appliedAt), "EEEE, dd MMMM yyyy")}</p>
+                </div>
+                <p className="font-medium">Status: {app.status}</p>
               </div>
-              <p className="font-medium">Status: {app.status}</p>
             </div>
+          ))
+        ) : (
+          <div className="text-center text-gray-500 mt-4">
+            Tidak ada lamaran untuk status ini.
           </div>
-        ))}
+        )}
 
         {/* Pagination Controls */}
         <div className="flex justify-between items-center mt-4">
