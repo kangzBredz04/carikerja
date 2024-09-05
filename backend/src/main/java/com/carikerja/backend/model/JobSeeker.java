@@ -22,7 +22,6 @@ public class JobSeeker {
     private String phoneNumber;
     private String email;
     private String location;
-    private Integer age;
     private String gender;
     private String aboutMe;
     private Boolean hasWorkExperience;

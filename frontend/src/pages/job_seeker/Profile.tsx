@@ -2,29 +2,31 @@ import { useState, useEffect, ChangeEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../utils";
 import { AllContext } from "../../App";
+import WorkExperienceComponent from "../../components/WorkExperienceComponent";
+import EducationComponent from "../../components/EducationComponent";
+import SkillComponent from "../../components/SkillComponent";
 
 interface SocialLinks {
-  portfolio_link: string;
+  portfolioLink: string;
   linkedin_link: string;
-  github_link: string;
+  githubLink: string;
 }
 
 interface Profile {
   id: number; // sesuai dengan primary key di tabel
   user_id: number; // relasi ke tabel users
   name: string;
-  birth_date: string; // Tanggal lahir
-  phone_number: string; // Nomor WhatsApp
+  birthDate: string; // Tanggal lahir
+  phoneNumber: string; // Nomor WhatsApp
   email: string;
   location: string;
-  age: string; // Sesuai dengan tabel
   gender: "Laki-laki" | "Perempuan"; // Hanya dua opsi sesuai catatan di tabel
-  about_me: string; // Tentang diri
-  has_work_experience: string; // Apakah memiliki pengalaman kerja
+  aboutMe: string; // Tentang diri
+  hasWorkExperience: boolean; // Apakah memiliki pengalaman kerja
   resume: string; // Link ke CV
-  portfolio_link: string; // Link ke portofolio
-  github_link: string; // Link ke GitHub
-  willing_to_work_remotely: boolean; // Bersedia kerja remote
+  portfolioLink: string; // Link ke portofolio
+  githubLink: string; // Link ke GitHub
+  willingToWorkRemotely: boolean; // Bersedia kerja remote
   socialLinks: SocialLinks; // Menghubungkan ke social media links
 }
 
@@ -34,6 +36,64 @@ function ProfilePage() {
   const [isEditingAbout, setIsEditingAbout] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const { userId } = useContext(AllContext) as unknown as { userId: string };
+
+  const experiences = [
+    {
+      id: 1,
+      title: "Instruktur",
+      company: "Program Beasiswa PUB",
+      startDate: "Agustus 2023",
+      endDate: "Desember 2023",
+      duration: "5 bulan",
+      description:
+        "Membimbing peserta dalam proyek akhir yang menggabungkan Spring Boot dan Thymeleaf.",
+    },
+    {
+      id: 2,
+      title: "Instruktur",
+      company: "Program Beasiswa PUB",
+      startDate: "Juni 2023",
+      endDate: "Agustus 2023",
+      duration: "3 bulan",
+      description:
+        "Menjelaskan dasar-dasar web development dengan HTML, CSS, dan JavaScript.",
+    },
+  ];
+
+  const educations = [
+    {
+      id: 1,
+      degree: "Sarjana Akuntansi",
+      institution: "Universitas Nasional Pasim",
+      startDate: "September 2020",
+      endDate: "Agustus 2024",
+      description:
+        "Fokus pada Akuntansi dan Sistem Informasi, dengan keahlian dalam audit dan pengelolaan keuangan.",
+    },
+    {
+      id: 2,
+      degree: "Diploma Komputer",
+      institution: "Politeknik Negeri Bali",
+      startDate: "September 2017",
+      endDate: "Agustus 2020",
+      description:
+        "Mengambil jurusan Sistem Informasi dengan fokus pada pengembangan web dan manajemen basis data.",
+    },
+  ];
+
+  const skills = [
+    "Node.js",
+    "JavaScript",
+    "Spring Framework",
+    "MySQL",
+    "Java",
+    "PostgreSQL",
+    "React.js",
+    "GIT",
+    "CSS3",
+    "HTML5",
+  ];
+
   useEffect(() => {
     api
       .get(`/job-seekers/${userId}`) // Pastikan endpoint API sesuai
@@ -44,7 +104,6 @@ function ProfilePage() {
           phoneNumber: string;
           email: string;
           location: string;
-          age: number;
           gender: string;
           aboutMe: string;
           hasWorkExperience: boolean;
@@ -54,25 +113,26 @@ function ProfilePage() {
           willingToWorkRemotely: boolean;
         };
 
-        setProfile({
+        console.log(data);
+
+        setProfile((prevProfile) => ({
+          ...prevProfile, // Menjaga properti lain yang mungkin sudah ada
+          id: prevProfile?.id || 0, // Isi id dengan nilai dari prevProfile atau nilai default
+          user_id: prevProfile?.user_id || 0, // Sama dengan user_id
           name: data.name,
-          birth_date: data.birthDate,
-          phone_number: data.phoneNumber,
+          birthDate: data.birthDate,
+          phoneNumber: data.phoneNumber,
           email: data.email,
           location: data.location,
-          age: data.age.toString(),
-          gender: data.gender === "male" ? "Laki-laki" : "Perempuan",
-          about_me: data.aboutMe,
-          has_work_experience: data.hasWorkExperience
-            ? "Memiliki pengalaman kerja"
-            : "Tidak memiliki pengalaman kerja",
-          resume: data.resume || "Belum diisi",
-          portfolio_link: data.portfolioLink || "Belum diisi",
-          github_link: data.githubLink || "Belum diisi",
-          willing_to_work_remotely: data.willingToWorkRemotely
-            ? "Bersedia"
-            : "Tidak bersedia",
-        });
+          gender: data.gender == "Laki-laki" ? "Laki-laki" : "Perempuan",
+          hasWorkExperience: data.hasWorkExperience,
+          resume: data.resume,
+          portfolioLink: data.portfolioLink,
+          githubLink: data.githubLink,
+          willingToWorkRemotely: data.willingToWorkRemotely,
+          aboutMe: data.aboutMe || "", // Jika tidak ada nilai aboutMe di data, isi dengan string kosong
+          socialLinks: prevProfile?.socialLinks || [], // Jika socialLinks tidak ada, beri nilai default array kosong
+        }));
       })
       .catch((error) => {
         console.error("Error fetching profile data:", error);
@@ -83,6 +143,7 @@ function ProfilePage() {
     try {
       api.put(`/job-seekers/${userId}`, profile).then(() => {
         alert("Data berhasil di update");
+        window.location.reload();
         setIsEditingBasic(false);
       });
     } catch (error) {
@@ -91,20 +152,33 @@ function ProfilePage() {
   };
 
   const handleSaveAboutMe = () => {
-    if (profile) {
-      // Implement saving logic here
-      setIsEditingAbout(false);
+    try {
+      api.put(`/job-seekers/${userId}`, profile).then(() => {
+        alert("Tentang saya berhasil di update");
+        window.location.reload();
+        setIsEditingAbout(false);
+      });
+    } catch (error) {
+      console.error("Failed to update profile", error);
     }
   };
 
   const handleChange = (
     field: keyof Profile,
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement>
   ) => {
     if (profile) {
       setProfile((prev) => {
         if (prev) {
-          return { ...prev, [field]: e.target.value };
+          const value =
+            e.target.type === "checkbox"
+              ? e.target.checked
+              : e.target.value === "true"
+              ? true
+              : e.target.value === "false"
+              ? false
+              : e.target.value;
+          return { ...prev, [field]: value };
         }
         return prev;
       });
@@ -124,27 +198,38 @@ function ProfilePage() {
               {/* Basic Info Cards */}
               {[
                 { label: "Nama", field: "name" },
-                { label: "Tanggal Lahir", field: "birth_date" },
-                { label: "Nomor Telepon", field: "phone_number" },
-                { label: "Email", field: "email" },
+                { label: "Tanggal Lahir", field: "birthDate" },
+                { label: "Nomor Telepon", field: "phoneNumber" },
                 { label: "Lokasi", field: "location" },
-                { label: "Usia", field: "age" },
                 { label: "Jenis Kelamin", field: "gender" },
-                { label: "Tentang Saya", field: "about_me" },
-                { label: "Pengalaman Kerja", field: "has_work_experience" },
+                {
+                  label: "Pengalaman Kerja",
+                  field: "hasWorkExperience",
+                  isBoolean: true, // Flag untuk field boolean
+                  trueText: "Saya punya pengalaman keja",
+                  falseText: "Saya belum pernah bekerja",
+                },
                 { label: "Resume (CV)", field: "resume" },
-                { label: "Portofolio", field: "portfolio_link" },
-                { label: "GitHub", field: "github_link" },
+                { label: "Portofolio", field: "portfolioLink" },
+                { label: "GitHub", field: "githubLink" },
                 {
                   label: "Bersedia Kerja Remote",
-                  field: "willing_to_work_remotely",
+                  field: "willingToWorkRemotely",
+                  isBoolean: true, // Flag untuk field boolean
+                  trueText: "Bersedia",
+                  falseText: "Tidak Bersedia",
                 },
               ].map((field) => (
                 <div key={field.label} className="flex flex-col">
                   <label className="font-medium mb-1">{field.label}</label>
                   <p className="border p-2 rounded-lg">
-                    {(profile[field.field as keyof Profile] as string) ||
-                      "Belum diisi"}
+                    {/* Cek apakah field merupakan boolean */}
+                    {field.isBoolean
+                      ? profile[field.field as keyof Profile]
+                        ? field.trueText
+                        : field.falseText
+                      : (profile[field.field as keyof Profile] as string) ||
+                        "Belum diisi"}
                   </p>
                 </div>
               ))}
@@ -158,9 +243,13 @@ function ProfilePage() {
           </div>
 
           {/* About Me Section */}
-          <div className="mt-6">
+          <div className="mt-6 p-6">
             <h2 className="font-semibold text-lg">Tentang Saya</h2>
-            <p>{profile.about}</p>
+            <p>
+              {profile.aboutMe?.trim()
+                ? profile.aboutMe
+                : "Belum ada deskripsi tentang saya."}
+            </p>
             <button
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mt-4"
               onClick={() => setIsEditingAbout(true)}
@@ -169,6 +258,23 @@ function ProfilePage() {
             </button>
           </div>
 
+          <WorkExperienceComponent
+            experiences={experiences}
+            onEdit={(id) =>
+              console.log(`Edit pengalaman kerja dengan ID: ${id}`)
+            }
+            onDelete={(id) =>
+              console.log(`Hapus pengalaman kerja dengan ID: ${id}`)
+            }
+          />
+
+          <EducationComponent
+            educations={educations}
+            onEdit={(id) => console.log(`Edit pendidikan dengan ID: ${id}`)}
+            onDelete={(id) => console.log(`Hapus pendidikan dengan ID: ${id}`)}
+          />
+
+          <SkillComponent skills={skills} onEdit={() => console.log("edit")} />
           {isEditingBasic && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2 max-h-[90vh] overflow-y-auto">
@@ -191,7 +297,7 @@ function ProfilePage() {
                       },
                       {
                         label: "Nomor Telepon",
-                        field: "phone_number",
+                        field: "phoneNumber",
                         type: "text",
                         placeholder: "Masukkan nomor telepon",
                       },
@@ -202,22 +308,10 @@ function ProfilePage() {
                         placeholder: "Masukkan lokasi",
                       },
                       {
-                        label: "Email",
-                        field: "email",
-                        type: "text",
-                        placeholder: "Masukkan email",
-                      },
-                      {
                         label: "Tanggal Lahir",
-                        field: "birth_date",
+                        field: "birthDate",
                         type: "date",
                         placeholder: "Pilih tanggal lahir",
-                      },
-                      {
-                        label: "Usia",
-                        field: "age",
-                        type: "number",
-                        placeholder: "Masukkan usia",
                       },
                     ].map((field) => (
                       <div key={field.label} className="flex flex-col">
@@ -248,8 +342,8 @@ function ProfilePage() {
                         className="border p-2 rounded-lg"
                       >
                         <option value="">Pilih jenis kelamin</option>
-                        <option value="male">Laki-laki</option>
-                        <option value="female">Perempuan</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
                       </select>
                     </div>
 
@@ -259,12 +353,14 @@ function ProfilePage() {
                         Pengalaman Kerja
                       </label>
                       <select
-                        value={profile.has_work_experience ? "yes" : "no"}
-                        onChange={(e) => handleChange("has_work_experience", e)}
+                        value={profile.hasWorkExperience ? true : false}
+                        onChange={(e) => handleChange("hasWorkExperience", e)}
                         className="border p-2 rounded-lg"
                       >
-                        <option value="no">Tidak ada</option>
-                        <option value="yes">Ada</option>
+                        <option value={true}>
+                          Saya punya pengalaman kerja
+                        </option>
+                        <option value={false}>Saya belum pernah bekerja</option>
                       </select>
                     </div>
 
@@ -288,8 +384,8 @@ function ProfilePage() {
                       <input
                         type="text"
                         placeholder="Masukkan link portfolio"
-                        value={profile.portfolio_link || ""}
-                        onChange={(e) => handleChange("portfolio_link", e)}
+                        value={profile.portfolioLink || ""}
+                        onChange={(e) => handleChange("portfolioLink", e)}
                         className="border p-2 rounded-lg"
                       />
                     </div>
@@ -300,8 +396,8 @@ function ProfilePage() {
                       <input
                         type="text"
                         placeholder="Masukkan link GitHub"
-                        value={profile.github_link || ""}
-                        onChange={(e) => handleChange("github_link", e)}
+                        value={profile.githubLink || ""}
+                        onChange={(e) => handleChange("githubLink", e)}
                         className="border p-2 rounded-lg"
                       />
                     </div>
@@ -312,14 +408,14 @@ function ProfilePage() {
                         Bersedia Bekerja Remote
                       </label>
                       <select
-                        value={profile.willing_to_work_remotely ? "yes" : "no"}
+                        value={profile.willingToWorkRemotely ? true : false}
                         onChange={(e) =>
-                          handleChange("willing_to_work_remotely", e)
+                          handleChange("willingToWorkRemotely", e)
                         }
                         className="border p-2 rounded-lg"
                       >
-                        <option value="no">Tidak</option>
-                        <option value="yes">Ya</option>
+                        <option value={true}>Bersedia</option>
+                        <option value={false}>Tidak Bersedia</option>
                       </select>
                     </div>
                   </div>
@@ -352,11 +448,11 @@ function ProfilePage() {
                   Edit Tentang Saya
                 </h2>
                 <textarea
-                  value={profile.about || ""} // Ensure value is a string
+                  value={profile.aboutMe || ""} // Ensure value is a string
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                     setProfile(
                       (prev) =>
-                        prev ? { ...prev, about: e.target.value } : null // Ensure prev is not null
+                        prev ? { ...prev, aboutMe: e.target.value } : null // Ensure prev is not null
                     )
                   }
                   className="border p-2 rounded-lg w-full h-40"

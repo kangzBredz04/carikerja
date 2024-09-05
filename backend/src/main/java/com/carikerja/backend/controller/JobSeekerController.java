@@ -32,6 +32,7 @@ public class JobSeekerController {
 
     @PutMapping("/{id}")
     public JobSeeker updateJobSeeker(@PathVariable Long id, @RequestBody JobSeeker updatedJobSeeker) {
+        // System.out.println(updatedJobSeeker);
         JobSeeker jobSeeker = jobSeekerRepository.findById(id).orElse(null);
         if (jobSeeker != null) {
             jobSeeker.setName(updatedJobSeeker.getName());
@@ -39,7 +40,6 @@ public class JobSeekerController {
             jobSeeker.setPhoneNumber(updatedJobSeeker.getPhoneNumber());
             jobSeeker.setEmail(updatedJobSeeker.getEmail());
             jobSeeker.setLocation(updatedJobSeeker.getLocation());
-            jobSeeker.setAge(updatedJobSeeker.getAge());
             jobSeeker.setGender(updatedJobSeeker.getGender());
             jobSeeker.setAboutMe(updatedJobSeeker.getAboutMe());
             jobSeeker.setHasWorkExperience(updatedJobSeeker.getHasWorkExperience());
@@ -47,8 +47,6 @@ public class JobSeekerController {
             jobSeeker.setPortfolioLink(updatedJobSeeker.getPortfolioLink());
             jobSeeker.setGithubLink(updatedJobSeeker.getGithubLink());
             jobSeeker.setWillingToWorkRemotely(updatedJobSeeker.getWillingToWorkRemotely());
-
-            System.out.println(updatedJobSeeker);
             return jobSeekerRepository.save(jobSeeker);
         }
         return null;
