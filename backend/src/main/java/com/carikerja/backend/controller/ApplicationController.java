@@ -57,4 +57,22 @@ public class ApplicationController {
         return applicationRepository.findApplicationByJobSeekerIdAndJobId(jobSeekerId, jobId)
                 .orElse(null); // Return null if not found
     }
+
+    @GetMapping("/job/{jobId}")
+    public List<Application> getApplicationsByJobId(@PathVariable Long jobId) {
+        return applicationRepository.findByJobId(jobId);
+    }
+
+    @PutMapping("/{id}/status")
+    public Application updateApplicationStatus(@PathVariable Long id, @RequestBody String status) {
+        // Menghapus tanda kutip dari status jika ada
+        String cleanedStatus = status.replace("\"", "");
+
+        Application application = applicationRepository.findById(id).orElse(null);
+        if (application != null) {
+            application.setStatus(cleanedStatus);
+            return applicationRepository.save(application);
+        }
+        return null; // atau bisa lempar exception jika aplikasi tidak ditemukan
+    }
 }

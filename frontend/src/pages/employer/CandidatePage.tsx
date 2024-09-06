@@ -1,206 +1,69 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { api } from "../../utils";
+import { useParams } from "react-router-dom";
 
 interface Candidate {
+  id: number;
   name: string;
   location: string;
-  whatsapp: string;
+  appliedAt: string;
   gender: string;
-  salaryExpectation: string;
+  requiredEducation: string;
   experience: string;
-  lastPosition: string;
+  resume: string;
   status: string;
-  createdAt: string; // Date field to sort candidates by time (dummy data)
 }
 
-const dummyData: Candidate[] = [
-  // Chat Dimulai
-  {
-    name: "Kevin Leonardo",
-    location: "Lawata, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "-",
-    salaryExpectation: "Rp 5 jt/bulan",
-    experience: "2 thn 1 bln",
-    lastPosition: "-",
-    status: "Chat Dimulai",
-    createdAt: "2023-08-01",
-  },
-  {
-    name: "Dewi Anggraini",
-    location: "Surabaya, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Female",
-    salaryExpectation: "Rp 4.5 jt/bulan",
-    experience: "3 thn",
-    lastPosition: "Customer Service",
-    status: "Chat Dimulai",
-    createdAt: "2023-08-02",
-  },
-  {
-    name: "Ferry Saputra",
-    location: "Medan, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Male",
-    salaryExpectation: "Rp 6 jt/bulan",
-    experience: "2 thn",
-    lastPosition: "Sales Executive",
-    status: "Chat Dimulai",
-    createdAt: "2023-08-03",
-  },
-
-  // Dalam Komunikasi
-  {
-    name: "Rina Wijaya",
-    location: "Jakarta, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Female",
-    salaryExpectation: "Rp 7 jt/bulan",
-    experience: "3 thn",
-    lastPosition: "Marketing Manager",
-    status: "Dalam Komunikasi",
-    createdAt: "2023-07-25",
-  },
-  {
-    name: "Andri Firmansyah",
-    location: "Malang, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Male",
-    salaryExpectation: "Rp 6.5 jt/bulan",
-    experience: "4 thn",
-    lastPosition: "Graphic Designer",
-    status: "Dalam Komunikasi",
-    createdAt: "2023-07-20",
-  },
-  {
-    name: "Wulan Pertiwi",
-    location: "Yogyakarta, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Female",
-    salaryExpectation: "Rp 5.5 jt/bulan",
-    experience: "3.5 thn",
-    lastPosition: "Content Writer",
-    status: "Dalam Komunikasi",
-    createdAt: "2023-07-28",
-  },
-
-  // Skill & Psikotes
-  {
-    name: "Budi Santoso",
-    location: "Bandung, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Male",
-    salaryExpectation: "Rp 6 jt/bulan",
-    experience: "5 thn",
-    lastPosition: "Software Engineer",
-    status: "Skill & Psikotes",
-    createdAt: "2023-06-20",
-  },
-  {
-    name: "Lina Syafitri",
-    location: "Semarang, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Female",
-    salaryExpectation: "Rp 5.5 jt/bulan",
-    experience: "4 thn",
-    lastPosition: "HR Manager",
-    status: "Skill & Psikotes",
-    createdAt: "2023-06-25",
-  },
-  {
-    name: "Agus Hartono",
-    location: "Banten, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Male",
-    salaryExpectation: "Rp 7 jt/bulan",
-    experience: "6 thn",
-    lastPosition: "Project Manager",
-    status: "Skill & Psikotes",
-    createdAt: "2023-06-22",
-  },
-
-  // Wawancara
-  {
-    name: "Siti Nurhaliza",
-    location: "Bali, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Female",
-    salaryExpectation: "Rp 4 jt/bulan",
-    experience: "1 thn",
-    lastPosition: "Admin",
-    status: "Wawancara",
-    createdAt: "2023-08-15",
-  },
-  {
-    name: "Dimas Setiawan",
-    location: "Jakarta, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Male",
-    salaryExpectation: "Rp 5.5 jt/bulan",
-    experience: "3 thn",
-    lastPosition: "Operations Supervisor",
-    status: "Wawancara",
-    createdAt: "2023-08-10",
-  },
-  {
-    name: "Ayu Lestari",
-    location: "Bali, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Female",
-    salaryExpectation: "Rp 6 jt/bulan",
-    experience: "2 thn",
-    lastPosition: "Finance Analyst",
-    status: "Wawancara",
-    createdAt: "2023-08-12",
-  },
-
-  // Negosiasi
-  {
-    name: "Andi Pratama",
-    location: "Surabaya, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Male",
-    salaryExpectation: "Rp 5.5 jt/bulan",
-    experience: "4 thn",
-    lastPosition: "HR Specialist",
-    status: "Negosiasi",
-    createdAt: "2023-08-05",
-  },
-  {
-    name: "Lina Wijaya",
-    location: "Jakarta, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Female",
-    salaryExpectation: "Rp 6.5 jt/bulan",
-    experience: "5 thn",
-    lastPosition: "Marketing Specialist",
-    status: "Negosiasi",
-    createdAt: "2023-08-03",
-  },
-  {
-    name: "Doni Kusuma",
-    location: "Bogor, Indonesia",
-    whatsapp: "WhatsApp",
-    gender: "Male",
-    salaryExpectation: "Rp 7 jt/bulan",
-    experience: "6 thn",
-    lastPosition: "Business Analyst",
-    status: "Negosiasi",
-    createdAt: "2023-08-01",
-  },
-];
-
 export default function CandidatePage() {
-  const [candidates] = useState<Candidate[]>(dummyData);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [activeTab, setActiveTab] = useState("Chat Dimulai");
+  const { id } = useParams<{ id: string }>();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
+  useEffect(() => {
+    api.get(`/applications/job/${id}`).then((res) => {
+      const mappedCandidates = res?.map((application: any) => ({
+        id: application.id,
+        name: application.jobSeeker?.name || "Unknown",
+        location: application.jobSeeker?.location || "Unknown",
+        appliedAt: application.appliedAt,
+        gender: application.jobSeeker?.gender || "-",
+        requiredEducation: `Rp 1 - Rp 2/bulan`,
+        experience: application.jobSeeker?.hasWorkExperience ? "Ya" : "Tidak",
+        resume: application.jobSeeker?.resume || "-",
+        status: application.status,
+        createdAt: application.appliedAt,
+      }));
+
+      setCandidates(mappedCandidates);
+    });
+  }, [id]);
+
+  console.log(candidates);
   const handleSortOrder = () => {
     setSortOrder(sortOrder === "newest" ? "oldest" : "newest");
+  };
+
+  const handleStatusChange = (index: number, newStatus: string) => {
+    const updatedCandidates = [...candidates];
+    updatedCandidates[index].status = newStatus;
+    setCandidates(updatedCandidates);
+
+    // Kirim update status ke API
+    const candidateId = updatedCandidates[index].id; // Sesuaikan jika ada ID kandidat
+    api
+      .put(`/applications/${candidateId}/status`, { status: newStatus })
+      .then((res) => {
+        console.log("Status updated:", res.data);
+      })
+      .catch((err) => {
+        console.error("Error updating status:", err);
+      });
   };
 
   const filteredCandidates = candidates
@@ -220,6 +83,15 @@ export default function CandidatePage() {
       }
     });
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       {/* Sticky Tabs */}
@@ -228,9 +100,7 @@ export default function CandidatePage() {
           {[
             "Chat Dimulai",
             "Dalam Komunikasi",
-            "Skill & Psikotes",
-            "Wawancara",
-            "Negosiasi",
+            "Tes dan Wawancara",
             "Direkrut",
             "Belum Sesuai",
           ].map((tab) => (
@@ -278,11 +148,12 @@ export default function CandidatePage() {
           <thead>
             <tr>
               <th className="p-4 text-left">Nama & Domisili</th>
-              <th className="p-4 text-left">WhatsApp</th>
+              <th className="p-4 text-left">Tanggal Dilamar</th>
               <th className="p-4 text-left">Jenis Kelamin</th>
               <th className="p-4 text-left">Ekspektasi Gaji</th>
-              <th className="p-4 text-left">Total Pengalaman</th>
-              <th className="p-4 text-left">Posisi Terakhir</th>
+              <th className="p-4 text-left">Berpengalaman</th>
+              <th className="p-4 text-left">Link Resume</th>
+              <th className="p-4 text-left">Status</th>
               <th className="p-4 text-left">Tindakan</th>
             </tr>
           </thead>
@@ -290,19 +161,42 @@ export default function CandidatePage() {
             {filteredCandidates.map((candidate, index) => (
               <tr key={index} className="border-t">
                 <td className="p-4">
-                  <div>
-                    <span className="font-semibold">{candidate.name}</span>
-                    <div className="text-gray-500">{candidate.location}</div>
-                  </div>
+                  {candidate.name} <br />
+                  <span className="text-gray-500 text-sm">
+                    {candidate.location}
+                  </span>
                 </td>
-                <td className="p-4">{candidate.whatsapp}</td>
+                <td className="p-4">{formatDate(candidate.appliedAt)}</td>
                 <td className="p-4">{candidate.gender}</td>
-                <td className="p-4">{candidate.salaryExpectation}</td>
+                <td className="p-4">Rahasia</td>
                 <td className="p-4">{candidate.experience}</td>
-                <td className="p-4">{candidate.lastPosition}</td>
+                <td className="p-4">{candidate.resume}</td>
                 <td className="p-4">
-                  <button className="py-1 px-3 bg-blue-500 text-white rounded">
-                    Chat
+                  {/* Select Option for Status */}
+                  <select
+                    value={candidate.status}
+                    onChange={(e) => {
+                      api
+                        .put(
+                          `/applications/${candidate.id}/status`,
+                          e.target.value
+                        )
+                        .then(() => {
+                          window.location.reload();
+                        });
+                    }}
+                    className="p-2 border rounded"
+                  >
+                    <option value={`Chat Dimulai`}>Chat Dimulai</option>
+                    <option value={`Dalam Komunikasi`}>Dalam Komunikasi</option>
+                    <option value="Tes dan Wawancara">Tes dan Wawancara</option>
+                    <option value="Direkrut">Direkrut</option>
+                    <option value="Belum Sesuai">Belum Sesuai</option>
+                  </select>
+                </td>
+                <td className="p-4">
+                  <button className="py-1 px-2 bg-blue-500 text-white rounded">
+                    Lihat Detail
                   </button>
                 </td>
               </tr>
@@ -310,15 +204,6 @@ export default function CandidatePage() {
           </tbody>
         </table>
       </div>
-
-      {/* Message if no more candidates */}
-      {filteredCandidates.length === 0 && (
-        <div className="flex justify-center items-center min-h-[200px] mt-8">
-          <h1 className="text-xl font-semibold text-gray-600">
-            Tidak ada kandidat yang ditemukan
-          </h1>
-        </div>
-      )}
     </div>
   );
 }

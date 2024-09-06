@@ -2,7 +2,7 @@ import { Job } from "../types/Job";
 import { FaClock, FaCalendarAlt } from "react-icons/fa";
 import { IoLocationSharp } from "react-icons/io5";
 import { api } from "../utils";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function JobCardDashboard({ job }: { job: Job }) {
   const { jobTitle, jobType, location, createdAt, applicants, id } = job;
@@ -41,12 +41,12 @@ export default function JobCardDashboard({ job }: { job: Job }) {
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-2">
-        <Link
-          to="/employe/candidate"
+        <button
+          onClick={() => navigate(`/employe/candidate/${id}`)}
           className="bg-blue-500 flex flex-col items-center text-white py-1 w-1/4 rounded hover:bg-blue-600"
         >
           Kelola Pelamar
-        </Link>
+        </button>
         <button
           onClick={() => navigate("/employe/add-job", { state: { job } })}
           className="bg-yellow-500 text-white py-1 w-1/4 rounded hover:bg-yellow-600"

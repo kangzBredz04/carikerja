@@ -18,4 +18,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     Optional<Application> findApplicationByJobSeekerIdAndJobId(
             @Param("jobSeekerId") Long jobSeekerId,
             @Param("jobId") Long jobId);
+
+    List<Application> findByJobId(Long jobId);
 }

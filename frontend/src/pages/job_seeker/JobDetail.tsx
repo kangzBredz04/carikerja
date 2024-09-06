@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import { FaBookmark, FaShareAlt, FaRocket } from "react-icons/fa";
 import { AllContext } from "../../App";
+import { api } from "../../utils";
 
 interface Job {
   id: number;
@@ -110,6 +111,8 @@ export default function JobDetail() {
         throw new Error("Failed to apply");
       }
 
+      api.put(`/jobs/${id}/increment-applicants`, {});
+
       setApplicationStatus("Application submitted successfully!");
       setIsApplied(true); // Set the job as applied after success
     } catch (error) {
@@ -138,18 +141,26 @@ export default function JobDetail() {
           </div>
           <div>
             <div className="flex flex-col gap-5">
-              <button
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg shadow-lg ${
-                  isApplied
-                    ? "bg-gray-400 text-gray-700 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
-                onClick={handleApplyFast}
-                disabled={isApplied} // Disable button if applied
-              >
-                <FaRocket />
-                {isApplied ? "Sudah Dilamar" : "Apply Fast"}
-              </button>
+              {localStorage.getItem("email") ? (
+                <button
+                  className={`flex items-center gap-2 px-6 py-2 rounded-lg shadow-lg ${
+                    isApplied
+                      ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                  onClick={handleApplyFast}
+                  disabled={isApplied} // Disable button if applied
+                >
+                  <FaRocket />
+                  {localStorage.getItem("email")
+                    ? isApplied
+                      ? "Sudah Dilamar"
+                      : "Apply Fast"
+                    : "Anda belum login"}
+                </button>
+              ) : (
+                ""
+              )}
               <div className="flex gap-4">
                 <button className="flex items-center gap-2 px-6 py-2 bg-gray-100 text-gray-600 rounded-lg shadow-lg hover:bg-gray-200">
                   <FaBookmark />

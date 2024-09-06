@@ -62,4 +62,15 @@ public class JobController {
     public void deleteJob(@PathVariable Long id) {
         jobRepository.deleteById(id);
     }
+
+    @PutMapping("/{id}/increment-applicants")
+    public Job incrementApplicants(@PathVariable Long id) {
+        Job job = jobRepository.findById(id).orElse(null);
+        if (job != null) {
+            // Tambahkan 1 ke jumlah applicants
+            job.setApplicants(job.getApplicants() + 1);
+            return jobRepository.save(job);
+        }
+        return null; // atau bisa lempar exception jika job tidak ditemukan
+    }
 }
