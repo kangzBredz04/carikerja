@@ -7,11 +7,11 @@ interface Application {
   id: number;
   title: string;
   company: string;
-  date: string; // You could rename this to appliedAt to match your model
+  date: string;
   status: string;
-  jobSeekerId: number; // Include jobSeekerId to filter by userId
-  imageUrl: string; // URL for the image
-  appliedAt: string; // Ensure this field is properly used as date
+  jobSeekerId: number;
+  imageUrl: string;
+  appliedAt: string;
 }
 
 const ApplicationsPage: React.FC = () => {
@@ -28,10 +28,10 @@ const ApplicationsPage: React.FC = () => {
 
   const tabs = [
     "Semua",
-    "Dilamar",
-    "Sedang Komunikasi",
-    "Wawancara & Tes",
-    "Direkrut",
+    "Chat Dimulai",
+    "Dalam Komunikasi",
+    "Tes dan Wawancara",
+    "Direktur",
     "Belum Sesuai",
   ];
 

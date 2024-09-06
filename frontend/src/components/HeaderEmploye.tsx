@@ -111,7 +111,7 @@ export default function HeaderEmpolye() {
                     onClick={() => setDropdownOpen(false)}
                   >
                     <Link
-                      to="/user/profile"
+                      to="/employe/profile"
                       className="block px-4 py-2 hover:bg-gray-100"
                     >
                       Profil Perusahaan

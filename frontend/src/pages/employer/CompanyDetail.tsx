@@ -107,7 +107,10 @@ export default function CompanyDetail() {
       {/* Company Banner */}
       <div className="relative">
         <img
-          src={company.bannerImage}
+          src={
+            company.bannerImage ||
+            "https://i.pinimg.com/1200x/5e/59/fc/5e59fc17067dc574186909461f35b78c.jpg"
+          }
           alt={`${company.companyName} banner`}
           className="w-full h-48 object-cover rounded-lg shadow-md"
         />
@@ -116,7 +119,10 @@ export default function CompanyDetail() {
         <div className="absolute bottom-0 left-4 transform translate-y-1/2">
           {/* Company Logo */}
           <img
-            src={company.logoImage}
+            src={
+              company.logoImage ||
+              "https://i.pinimg.com/1200x/ae/4c/9e/ae4c9ea2edf887f6ad1e4e63cfae05b0.jpg"
+            }
             alt={`${company.companyName} logo`}
             className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
           />
@@ -126,29 +132,31 @@ export default function CompanyDetail() {
       {/* Company Name and Slogan outside the banner */}
       <div className="mt-16 px-4 text-gray-800">
         <h1 className="text-3xl font-bold flex items-center">
-          {company.companyName}
+          {company.companyName || "Unknown"}
           <span className="ml-2 text-yellow-500" title="Verified">
             ✔️
           </span>
         </h1>
-        <p className="text-sm">{company.slogan}</p>
+        <p className="text-sm">{company.slogan || "Unknown"}</p>
       </div>
 
       {/* Company Details */}
       <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-600">
         <div>
           <p>
-            <span className="font-medium">📍 Location:</span> {company.address}
+            <span className="font-medium">📍 Location:</span>{" "}
+            {company.address || "Unknown"}
           </p>
           <p>
-            <span className="font-medium">🏢 Industry:</span> {company.industry}
+            <span className="font-medium">🏢 Industry:</span>{" "}
+            {company.industry || "Unknown"}
           </p>
         </div>
         <div>
           <p>
             <span className="font-medium">👥 Company Size:</span>
             {company.companySize.charAt(0).toUpperCase() +
-              company.companySize.slice(1)}
+              company.companySize.slice(1) || "Unknown"}
           </p>
           <p>
             <span className="font-medium">✔️ Verified:</span>{" "}
@@ -163,7 +171,7 @@ export default function CompanyDetail() {
           About the Company
         </h2>
         <p className="text-gray-600 leading-relaxed">
-          {company.companyDescription}
+          {company.companyDescription || "Unknown"}
         </p>
       </div>
 
@@ -173,17 +181,17 @@ export default function CompanyDetail() {
         <div className="flex flex-col space-y-2 text-gray-600">
           <p className="flex items-center">
             <IoLocationOutline className="mr-2" />
-            {company.address}
+            {company.address || "Unknown"}
           </p>
           <p className="flex items-center">
             <IoGlobeOutline className="mr-2" />
             <a
-              href={company.websiteLink}
+              href={company.websiteLink || "Unknown"}
               className="text-blue-600 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              {company.websiteLink}
+              {company.websiteLink || "Unknown"}
             </a>
           </p>
           <p className="flex items-center">

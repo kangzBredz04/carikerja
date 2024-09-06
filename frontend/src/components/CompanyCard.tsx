@@ -34,8 +34,7 @@ function CompanyCard({
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        // Assuming the API returns an array of jobs
-        setJobCount(data.length); // Update job count with the number of jobs
+        setJobCount(data.length);
       } catch (error) {
         console.error("Error fetching job data:", error);
         setJobCount(0); // Set job count to 0 if there's an error
@@ -49,6 +48,8 @@ function CompanyCard({
     navigate(`/company/${id}`);
   };
 
+  console.log(name);
+
   return (
     <div
       onClick={handleCardClick} // Add click event to navigate
@@ -56,26 +57,29 @@ function CompanyCard({
     >
       <div className="flex items-center mb-4">
         <img
-          src={logo} // Display the logo passed via props
+          src={
+            logo ||
+            `https://i.pinimg.com/1200x/ae/4c/9e/ae4c9ea2edf887f6ad1e4e63cfae05b0.jpg`
+          } // Display the logo passed via props
           alt={`${name} logo`}
           className="w-12 h-12 mr-4"
         />
         <div>
-          <h2 className="font-bold text-lg">{name}</h2>
-          <p className="text-sm text-gray-500">{location}</p>
+          <h2 className="font-bold text-lg">{name || "Unknown"}</h2>
+          <p className="text-sm text-gray-500">{location || "Unknown"}</p>
         </div>
       </div>
       <div className="mb-2 flex flex-col gap-2">
         <p className="text-sm font-semibold flex items-center gap-2">
           <HiBuildingOffice2 size={18} />
-          {industry}
+          {industry || "Unknown"}
         </p>
         <p className="text-sm font-semibold flex items-center gap-2">
           <RiBriefcase4Fill size={18} />
           {jobCount > 0 ? `${jobCount} lowongan` : "Sedang tidak ada lowongan"}
         </p>
       </div>
-      <div className="text-sm font-semibold">{slogan}</div>
+      <div className="text-sm font-semibold">{slogan || "Unknown"}</div>
     </div>
   );
 }

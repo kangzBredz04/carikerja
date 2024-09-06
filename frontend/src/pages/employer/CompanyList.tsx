@@ -30,6 +30,7 @@ export default function CompanyList() {
       .get("/employers") // Replace with the correct endpoint
       .then((response) => {
         setCompanies(response); // Assuming the data is in response.data
+        console.log(response);
       })
       .catch((error) => {
         console.error("Error fetching company data:", error);
@@ -38,7 +39,7 @@ export default function CompanyList() {
 
   const filteredCompanies = companies.filter((company) => {
     if (!company.companyName) {
-      return false; // Exclude companies without a name
+      return (company.companyName = "Unknown"); // Exclude companies without a name
     }
 
     return company.companyName.toLowerCase().includes(searchTerm.toLowerCase());
@@ -60,12 +61,14 @@ export default function CompanyList() {
           <CompanyCard
             key={company.id}
             id={company.id}
-            name={company.companyName} // Mapping the fields
-            location={company.address}
-            industry={company.industry}
-            jobCount={0} // Assuming no jobCount available, set default
+            name={company.companyName || "Unknown"} // Mapping the fields
+            location={company.address || "Unknown"}
+            industry={company.industry || "Unknown"}
             slogan={company.slogan || "No slogan available"} // Pass slogan
-            logo={company.logoImage || "/logo-placeholder.png"} // Fallback logo
+            logo={
+              company.logoImage ||
+              "https://i.pinimg.com/1200x/ae/4c/9e/ae4c9ea2edf887f6ad1e4e63cfae05b0.jpg"
+            } // Fallback logo
           />
         ))}
       </div>

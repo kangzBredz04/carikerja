@@ -94,7 +94,7 @@ export default function JobDetail() {
     const applicationData = {
       job: { id: job.id },
       jobSeeker: { id: userId },
-      status: "Dilamar",
+      status: "Chat Dimulai",
       appliedAt: new Date().toISOString(),
     };
 

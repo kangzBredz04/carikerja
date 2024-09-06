@@ -24,6 +24,7 @@ import BlogPage from "./pages/employer/BlogPage.tsx";
 import AddJob from "./pages/employer/AddJob.tsx";
 import CandidatePage from "./pages/employer/CandidatePage.tsx";
 import ApplicationsPage from "./pages/job_seeker/ApplicationsPage.tsx";
+import EmployerProfilePage from "./pages/employer/EmployerProfilePage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
       {
         path: "/employe/candidate/:id",
         element: <CandidatePage />,
+      },
+      {
+        path: "/employe/profile",
+        element: <EmployerProfilePage />,
       },
       {
         path: "/employe/register",
