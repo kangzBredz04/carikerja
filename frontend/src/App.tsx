@@ -19,6 +19,7 @@ export const AllContext = createContext<AllContextType>(defaultContextValue);
 
 function App() {
   const [userId, setUserId] = useState(0);
+  const [employerId, setEmployerId] = useState(0);
 
   useEffect(() => {
     api.get("/job-seekers").then((response) => {
