@@ -29,4 +29,6 @@ public class JobSeeker {
     private String portfolioLink;
     private String githubLink;
     private Boolean willingToWorkRemotely;
+
+    private String skills; // Changed to String for handling skills as a single string
 }

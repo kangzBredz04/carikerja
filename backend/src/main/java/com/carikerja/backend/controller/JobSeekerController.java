@@ -32,7 +32,6 @@ public class JobSeekerController {
 
     @PutMapping("/{id}")
     public JobSeeker updateJobSeeker(@PathVariable Long id, @RequestBody JobSeeker updatedJobSeeker) {
-        // System.out.println(updatedJobSeeker);
         JobSeeker jobSeeker = jobSeekerRepository.findById(id).orElse(null);
         if (jobSeeker != null) {
             jobSeeker.setName(updatedJobSeeker.getName());
@@ -47,6 +46,7 @@ public class JobSeekerController {
             jobSeeker.setPortfolioLink(updatedJobSeeker.getPortfolioLink());
             jobSeeker.setGithubLink(updatedJobSeeker.getGithubLink());
             jobSeeker.setWillingToWorkRemotely(updatedJobSeeker.getWillingToWorkRemotely());
+            jobSeeker.setSkills(updatedJobSeeker.getSkills()); // Update skills
             return jobSeekerRepository.save(jobSeeker);
         }
         return null;
@@ -55,5 +55,15 @@ public class JobSeekerController {
     @DeleteMapping("/{id}")
     public void deleteJobSeeker(@PathVariable Long id) {
         jobSeekerRepository.deleteById(id);
+    }
+
+    @PutMapping("/{id}/skills")
+    public JobSeeker updateJobSeekerSkills(@PathVariable Long id, @RequestBody String skills) {
+        JobSeeker jobSeeker = jobSeekerRepository.findById(id).orElse(null);
+        if (jobSeeker != null) {
+            jobSeeker.setSkills(skills); // Update skills
+            return jobSeekerRepository.save(jobSeeker);
+        }
+        return null;
     }
 }

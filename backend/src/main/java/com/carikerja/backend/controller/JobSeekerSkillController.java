@@ -46,4 +46,9 @@ public class JobSeekerSkillController {
     public void deleteJobSeekerSkill(@PathVariable Long id) {
         jobSeekerSkillRepository.deleteById(id);
     }
+
+    @GetMapping("/job-seeker/{jobSeekerId}")
+    public List<JobSeekerSkill> getSkillsByJobSeekerId(@PathVariable Long jobSeekerId) {
+        return jobSeekerSkillRepository.findByJobSeekerId(jobSeekerId);
+    }
 }

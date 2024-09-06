@@ -22,6 +22,7 @@ public class WorkExperienceController {
 
     @PostMapping
     public WorkExperience createWorkExperience(@RequestBody WorkExperience workExperience) {
+        System.out.println(workExperience);
         return workExperienceRepository.save(workExperience);
     }
 
@@ -47,5 +48,10 @@ public class WorkExperienceController {
     @DeleteMapping("/{id}")
     public void deleteWorkExperience(@PathVariable Long id) {
         workExperienceRepository.deleteById(id);
+    }
+
+    @GetMapping("/job-seeker/{jobSeekerId}")
+    public List<WorkExperience> getWorkExperiencesByJobSeekerId(@PathVariable Long jobSeekerId) {
+        return workExperienceRepository.findByJobSeekerId(jobSeekerId);
     }
 }
